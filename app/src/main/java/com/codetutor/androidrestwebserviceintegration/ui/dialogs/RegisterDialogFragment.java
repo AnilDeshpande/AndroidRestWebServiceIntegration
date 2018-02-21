@@ -1,9 +1,17 @@
-package com.codetutor.androidrestwebserviceintegration;
+package com.codetutor.androidrestwebserviceintegration.ui.dialogs;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
@@ -16,24 +24,69 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by anildeshpande on 2/21/18.
+ */
 
-    private  static String TAG = MainActivity.class.getSimpleName();
+public class RegisterDialogFragment extends android.app.DialogFragment implements View.OnClickListener{
+
+    private static final String TAG = RegisterDialogFragment.class.getCanonicalName();
+
+    WeakReference<Context> contextReference;
+
+    View rootView;
+
+    EditText editTextUserName,editTextEmailId,editTextPassword;
+    Button buttonRegister;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getDialog().setTitle("Register");
+        rootView = inflater.inflate(R.layout.fragment_dialog_register,container);
+        initUI();
+        return rootView;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog= super.onCreateDialog(savedInstanceState);
+        dialog.setTitle(getString(R.string.string_register));
+        return dialog;
+    }
 
-        if(Util.isAppOnLine(getApplicationContext())){
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        contextReference = new WeakReference<Context>(getActivity());
+    }
+
+    private void initUI(){
+        editTextUserName = (EditText)rootView.findViewById(R.id.editTextUserName);
+        editTextEmailId = (EditText)rootView.findViewById(R.id.editTextEmailId);
+        editTextPassword = (EditText)rootView.findViewById(R.id.editTextPassword);
+        buttonRegister = (Button)rootView.findViewById(R.id.buttonRegister);
+
+        buttonRegister.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.buttonRegister: login();break;
+        }
+    }
+
+    private void login(){
+        if(Util.isAppOnLine(contextReference.get())){
             Thread thread=new Thread(registerAuthor);
             thread.start();
         }
-
     }
 
     Runnable registerAuthor = new Runnable() {
@@ -76,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     response = stringBuilder.toString();
                 }
-            Log.i(TAG,response);
+                Log.i(TAG,response);
 
             }catch (MalformedURLException e){
                 e.printStackTrace();
@@ -92,8 +145,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
-
-
-
 }
