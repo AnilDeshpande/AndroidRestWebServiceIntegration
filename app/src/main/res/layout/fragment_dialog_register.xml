@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.codetutor.androidrestwebserviceintegration.MainActivity">
+    android:layout_height="match_parent">
 
 
     <EditText
@@ -14,42 +11,41 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="35dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="@string/string_username" />
 
     <EditText
-        android:id="@+id/editTextPassword"
+        android:id="@+id/editTextEmailId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editTextUserName"
         android:layout_alignStart="@+id/editTextUserName"
         android:layout_below="@+id/editTextUserName"
-        android:layout_marginTop="37dp"
+        android:layout_marginTop="42dp"
+        android:ems="10"
+        android:hint="@string/string_emailId"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextEmailId"
+        android:layout_alignStart="@+id/editTextEmailId"
+        android:layout_below="@+id/editTextEmailId"
+        android:layout_marginTop="47dp"
         android:ems="10"
         android:hint="@string/string_password"
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/buttonRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextPassword"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/string_login" />
-
-    <TextView
-        android:id="@+id/textViewRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:layout_toEndOf="@+id/editTextPassword"
-        android:textSize="16sp"
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_toRightOf="@+id/editTextPassword"
+        android:layout_marginTop="28dp"
         android:text="@string/string_register" />
-
-
 </RelativeLayout>

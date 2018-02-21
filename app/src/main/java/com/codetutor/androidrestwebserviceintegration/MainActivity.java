@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
     Runnable registerAuthor = new Runnable() {
 
-
         @Override
         public void run() {
             HttpURLConnection httpURLConnection=null;
