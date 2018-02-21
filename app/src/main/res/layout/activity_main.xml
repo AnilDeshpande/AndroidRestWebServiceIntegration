@@ -51,5 +51,4 @@
         android:layout_toRightOf="@+id/editTextPassword"
         android:text="@string/string_register" />
 
-
 </RelativeLayout>

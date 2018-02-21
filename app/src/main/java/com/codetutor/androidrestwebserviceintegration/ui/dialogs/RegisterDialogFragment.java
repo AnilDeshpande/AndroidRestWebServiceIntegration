@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
@@ -44,6 +45,9 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
     EditText editTextUserName,editTextEmailId,editTextPassword;
     Button buttonRegister;
 
+    ProgressBar progressBar;
+    Author author;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,6 +75,8 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
         editTextEmailId = (EditText)rootView.findViewById(R.id.editTextEmailId);
         editTextPassword = (EditText)rootView.findViewById(R.id.editTextPassword);
         buttonRegister = (Button)rootView.findViewById(R.id.buttonRegister);
+        progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         buttonRegister.setOnClickListener(this);
     }
@@ -83,13 +89,21 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
     }
 
     private void login(){
+        String userName=editTextUserName.getText().toString();
+        String emailId = editTextEmailId.getText().toString();
+        String password = editTextPassword.getText().toString();
+        author= new Author(0,userName.toString(),emailId,password);
+
         if(Util.isAppOnLine(contextReference.get())){
+            progressBar.setVisibility(View.VISIBLE);
             Thread thread=new Thread(registerAuthor);
             thread.start();
         }
     }
 
     Runnable registerAuthor = new Runnable() {
+
+
 
         @Override
         public void run() {
@@ -105,7 +119,6 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setRequestProperty("Content-Type","application/json");
 
-                Author author=new Author(0,"Anil","anildesh82@gmail.com","anil");
                 JSONObject authorJsonObject = new JSONObject();
                 authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
                 authorJsonObject.put("authorName",author.getAuthorName());
@@ -131,6 +144,7 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
                 }
                 Log.i(TAG,response);
 
+
             }catch (MalformedURLException e){
                 e.printStackTrace();
             }catch (IOException e){
@@ -141,6 +155,12 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
                 e.printStackTrace();
             } finally {
                 httpURLConnection.disconnect();
+                progressBar.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
         }
