@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showRegisterDialog(){
         DialogFragment dialogFragment = new RegisterDialogFragment();
         dialogFragment.show(getFragmentManager(),"register");
-
     }
 
 }

@@ -1,6 +1,7 @@
 package com.codetutor.androidrestwebserviceintegration.ui.dialogs;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
@@ -28,13 +30,14 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 
 /**
  * Created by anildeshpande on 2/21/18.
  */
 
-public class RegisterDialogFragment extends android.app.DialogFragment implements View.OnClickListener{
+public class RegisterDialogFragment extends DialogFragment implements View.OnClickListener{
 
     private static final String TAG = RegisterDialogFragment.class.getCanonicalName();
 
@@ -43,14 +46,25 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
     View rootView;
 
     EditText editTextUserName,editTextEmailId,editTextPassword;
-    Button buttonRegister;
+    Button buttonRegister, buttonCancel;
 
     ProgressBar progressBar;
     Author author;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Holo_Light_Dialog);
+        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Light_Dialog);
+        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Dialog);
+        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Light_Dialog);
+        //setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Holo_Light);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         getDialog().setTitle("Register");
         rootView = inflater.inflate(R.layout.fragment_dialog_register,container);
         initUI();
@@ -74,17 +88,23 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
         editTextUserName = (EditText)rootView.findViewById(R.id.editTextUserName);
         editTextEmailId = (EditText)rootView.findViewById(R.id.editTextEmailId);
         editTextPassword = (EditText)rootView.findViewById(R.id.editTextPassword);
+
         buttonRegister = (Button)rootView.findViewById(R.id.buttonRegister);
+        buttonCancel = (Button)rootView.findViewById(R.id.buttonCancel);
+
+        buttonRegister.setOnClickListener(this);
+        buttonCancel.setOnClickListener(this);
+
         progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-        buttonRegister.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.buttonRegister: login();break;
+            case R.id.buttonCancel: dismiss();break;
         }
     }
 
@@ -102,9 +122,6 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
     }
 
     Runnable registerAuthor = new Runnable() {
-
-
-
         @Override
         public void run() {
             HttpURLConnection httpURLConnection=null;
@@ -144,7 +161,9 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
                 }
                 Log.i(TAG,response);
 
-
+            }catch (SocketTimeoutException e){
+                toastMessage("Registration failed, server down. Try later!!");
+                e.printStackTrace();
             }catch (MalformedURLException e){
                 e.printStackTrace();
             }catch (IOException e){
@@ -165,4 +184,13 @@ public class RegisterDialogFragment extends android.app.DialogFragment implement
 
         }
     };
+
+    private void toastMessage(final String message){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(contextReference.get(),message,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
