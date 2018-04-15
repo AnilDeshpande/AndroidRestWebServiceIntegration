@@ -35,8 +35,9 @@
         android:id="@+id/buttonLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextPassword"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="25dp"
         android:text="@string/string_login" />
 
     <TextView
@@ -45,10 +46,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="15dp"
-        android:layout_toEndOf="@+id/editTextPassword"
         android:textSize="16sp"
         android:textColor="@android:color/holo_red_dark"
-        android:layout_toRightOf="@+id/editTextPassword"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
         android:text="@string/string_register" />
 
 </RelativeLayout>
