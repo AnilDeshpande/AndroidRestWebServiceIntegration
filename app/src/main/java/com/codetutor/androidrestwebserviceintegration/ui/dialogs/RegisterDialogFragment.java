@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
@@ -128,7 +129,8 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
             HttpURLConnection httpURLConnection=null;
             try{
                 String response=null;
-                URL url = new URL(ToDoAppRestAPI.baseUrl+ToDoAppRestAPI.registerAuthor);
+                URL url = new URL(RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor);
+
                 httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setReadTimeout(2000);
                 httpURLConnection.setConnectTimeout(4000);
