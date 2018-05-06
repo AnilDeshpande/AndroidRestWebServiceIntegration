@@ -3,6 +3,8 @@ package com.codetutor.androidrestwebserviceintegration;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.codetutor.androidrestwebserviceintegration.network.Util;
+
 /**
  * Created by anildeshpande on 5/2/18.
  */
@@ -13,6 +15,7 @@ public class AppConfig extends Application {
     static SharedPreferences.Editor editor;
 
     public static API_ENDPOINTS selectedEndPoint;
+    public boolean isEmulator;
 
     public static enum API_ENDPOINTS{
         localhost, remote
@@ -25,6 +28,7 @@ public class AppConfig extends Application {
 
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        isEmulator = Util.isEmulator();
 
     }
 
@@ -54,6 +58,15 @@ public class AppConfig extends Application {
     public static void saveSessionId(String sessionId){
         editor.putString("sessionId",sessionId);
         editor.commit();
+    }
+
+    public static void setServerEndPointPreference(boolean endPoint){
+        editor.putBoolean("endpoint",endPoint);
+        editor.commit();
+    }
+
+    public static boolean getSeverEndPointPreference(){
+        return sharedPreferences.getBoolean("endpoint", true);
     }
 
 }

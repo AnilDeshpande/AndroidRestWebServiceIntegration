@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
+import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 
@@ -52,6 +53,16 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
     ProgressBar progressBar;
     Author author;
+
+    private RegistrationListener registrationListener;
+
+    public interface RegistrationListener{
+        public void onRegistrationSuccess(Author author);
+    }
+
+    public void setRegistrationListener(RegistrationListener registrationListener){
+        this.registrationListener = registrationListener;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -161,6 +172,17 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                         stringBuilder.append(line);
                     }
                     response = stringBuilder.toString();
+                    final Author author = ToDoJsonParsers.getAuthor(new JSONObject(response));
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toastMessage("Registration Success");
+                            registrationListener.onRegistrationSuccess(author);
+                            dismiss();
+                        }
+                    });
+
+
                 }
                 Log.i(TAG,response);
 

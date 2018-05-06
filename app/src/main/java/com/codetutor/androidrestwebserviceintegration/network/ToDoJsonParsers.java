@@ -24,7 +24,7 @@ public class ToDoJsonParsers {
     private static final String JSON_KEY_TODO_PLACE = "place";
     private static final String JSON_KEY_TODO_STRING = "todoString";
 
-    private static final String JSON_KEY_AUTHOR_ID = "id";
+    private static final String JSON_KEY_AUTHOR_ID = "authorId";
     private static final String JSON_KEY_AUTHOR_EMAIL_ID = "authorEmailId";
     private static final String JSON_KEY_AUTHOR_NAME = "authorName";
     private static final String JSON_KEY_AUTHOR_PASSWORD = "authorPassword";
@@ -39,7 +39,10 @@ public class ToDoJsonParsers {
             author.setAuthorId(jsonObject.getLong(JSON_KEY_AUTHOR_ID));
             author.setAuthorEmailId(jsonObject.getString(JSON_KEY_AUTHOR_EMAIL_ID));
             author.setAuthorName(jsonObject.getString(JSON_KEY_AUTHOR_NAME));
-            author.setAuthorPassword(jsonObject.getString(JSON_KEY_AUTHOR_PASSWORD));
+            if(!jsonObject.isNull(JSON_KEY_AUTHOR_PASSWORD)){
+                author.setAuthorPassword(jsonObject.getString(JSON_KEY_AUTHOR_PASSWORD));
+            }
+
         }catch (JSONException e){
             Log.i(TAG,e.getMessage());
         }
