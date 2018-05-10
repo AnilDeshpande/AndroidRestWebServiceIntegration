@@ -41,22 +41,13 @@ public class AppConfig extends Application {
         return sharedPreferences.getString("username",null);
     }
 
-    public static void savePassword(String password){
-        editor.putString("password",password);
-        editor.commit();
-    }
-
-    public static String getSavedPassword(){
-        return sharedPreferences.getString("password",null);
-    }
-
 
     public static String getSessionId(){
-        return sharedPreferences.getString("sessionId",null);
+        return sharedPreferences.getString(getSavedUserName(),null);
     }
 
     public static void saveSessionId(String sessionId){
-        editor.putString("sessionId",sessionId);
+        editor.putString(getSavedUserName(),sessionId);
         editor.commit();
     }
 
