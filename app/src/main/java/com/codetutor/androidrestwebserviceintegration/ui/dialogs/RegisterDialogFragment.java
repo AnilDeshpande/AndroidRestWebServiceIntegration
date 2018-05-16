@@ -1,7 +1,6 @@
 package com.codetutor.androidrestwebserviceintegration.ui.dialogs;
 
 import android.app.Dialog;
-
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,13 +14,13 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
-import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -32,16 +31,8 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -120,6 +111,12 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
         progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
+
+        if(BuildConfig.DEBUG){
+            editTextUserName.setText("AppUser_1");
+            editTextEmailId.setText("AppUser_1@samplemail.com");
+            editTextPassword.setText("AppUser_1");
+        }
 
     }
 
