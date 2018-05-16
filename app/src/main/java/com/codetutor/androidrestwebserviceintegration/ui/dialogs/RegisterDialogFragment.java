@@ -174,19 +174,27 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                 }
 
                 @Override
-                public void onResponse(Response response) throws IOException {
+                public void onResponse(final Response response) throws IOException {
                     Log.i(TAG,""+response.body().string());
+
+                    try {
+                        final Author author = ToDoJsonParsers.getAuthor(new JSONObject(response.body().string()));
+                    }catch (JSONException e){
+                        Log.d(TAG,e.getMessage());
+                    }
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             progressBar.setVisibility(View.INVISIBLE);
+                            if(registrationListener!=null){
+                                registrationListener.onRegistrationSuccess(author);
+                            }
+                            dismiss();
                         }
                     });
                 }
             });
-
-
-
         }
     }
 
