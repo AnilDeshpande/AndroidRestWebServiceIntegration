@@ -1,6 +1,7 @@
 package com.codetutor.androidrestwebserviceintegration;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.codetutor.androidrestwebserviceintegration.network.Util;
@@ -17,6 +18,8 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
+    static Context context;
+
     public static enum API_ENDPOINTS{
         localhost, remote
     }
@@ -29,6 +32,7 @@ public class AppConfig extends Application {
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
+        context = getApplicationContext();
 
     }
 
@@ -67,6 +71,10 @@ public class AppConfig extends Application {
 
     public static boolean getSeverEndPointPreference(){
         return sharedPreferences.getBoolean("endpoint", true);
+    }
+
+    public static Context getContext(){
+        return context;
     }
 
 }

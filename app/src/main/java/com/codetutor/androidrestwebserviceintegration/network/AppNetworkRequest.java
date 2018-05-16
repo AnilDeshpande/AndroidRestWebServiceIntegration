@@ -1,16 +1,26 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
+import android.os.Handler;
+
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.concurrent.TimeUnit;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class AppNetworkRequest implements Runnable{
 
+    Handler handler;
+
+
+
     APICallListener apiCallListener;
+
+    OkHttpClient okHttpClient;
+
+    Object responseObject;
 
     public static enum REQUEST_TYPE{
         REQUEST_REGISTER_AUTHOR,
@@ -23,47 +33,47 @@ public abstract class AppNetworkRequest implements Runnable{
 
     }
 
-    public static final int REQUEST_REGISTER_AUTHOR = 1;
-    public static final int REQUEST_LOGIN_AUTHOR = 2;
-    public static final int REQUEST_LOGOUT_AUTHOR = 3;
-    public static final int REQUEST_ADD_TODO_ITEM = 4;
-    public static final int REQUEST_GET_TODOS = 5;
-    public static final int REQUEST_DELETE_TODO = 6;
-    public static final int REQUEST_MODIFY_TODO = 7;
-
-
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String JSON_CONTENT_TYPE  = "application/json";
 
-    String url;
-    Map<String,String> header = new HashMap<>();
-    String requestBody;
+    public static final int CONNECT_TIMEOUT=5000;
+    public static final int READ_TIMEOUT=5000;
 
-    public static AppNetworkRequest getReqestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener,Object request){
+    AppNetworkRequest(APICallListener apiCallListener){
+        handler = new Handler(AppConfig.getContext().getMainLooper());
+        this.apiCallListener=apiCallListener;
+        okHttpClient = new OkHttpClient();
+        okHttpClient.setConnectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
+        okHttpClient.setReadTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public static AppNetworkRequest getReqestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener,Object requestBody){
 
         AppNetworkRequest appNetworkRequest=null;
 
-        try {
-            switch (requestType){
-                case REQUEST_REGISTER_AUTHOR:
-                    Author author = (Author)request;
-                    JSONObject authorJsonObject = new JSONObject();
 
-                    authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
-                    authorJsonObject.put("authorName",author.getAuthorName());
-                    authorJsonObject.put("authorPassword",author.getAuthorPassword());
-                    appNetworkRequest = new RequestRegisterAuthor(apiCallListener, authorJsonObject);
-                    break;
+        switch (requestType){
+            case REQUEST_REGISTER_AUTHOR:
+                appNetworkRequest = getRegisterAuthorRequest(REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, apiCallListener, requestBody);
+                break;
+            case REQUEST_LOGIN_AUTHOR: break;
+            case REQUEST_LOGOUT_AUTHOR: break;
+            case REQUEST_ADD_TODO_ITEM: break;
+            case REQUEST_GET_TODOS: break;
+            case REQUEST_DELETE_TODO: break;
+            case REQUEST_MODIFY_TODO: break;
 
-            }
-        }catch (JSONException e){
-            e.printStackTrace();
         }
-
         return appNetworkRequest;
-
     }
 
-    abstract void execute();
+    private static AppNetworkRequest getRegisterAuthorRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestBody){
+        Author author = (Author)requestBody;
+        return new RequestRegisterAuthor(apiCallListener, new GsonBuilder().create().toJson(author));
+    }
+
+
+
+    public abstract void makeBackEndRequest();
 
 }
