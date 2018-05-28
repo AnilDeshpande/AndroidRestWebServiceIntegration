@@ -181,8 +181,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                             dismiss();
                         }
                     });
-
-
                 }
                 Log.i(TAG,response);
 
