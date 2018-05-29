@@ -21,12 +21,8 @@ import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.google.gson.Gson;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +30,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by anildeshpande on 2/21/18.
@@ -113,9 +117,9 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         progressBar.setVisibility(View.INVISIBLE);
 
         if(BuildConfig.DEBUG){
-            editTextUserName.setText("AppUser_1");
-            editTextEmailId.setText("AppUser_1@samplemail.com");
-            editTextPassword.setText("AppUser_1");
+            editTextUserName.setText("AnilDeshpande");
+            editTextEmailId.setText("AnilDeshpande@samplemail.com");
+            editTextPassword.setText("AnilDeshpande");
         }
 
     }
@@ -141,27 +145,21 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
-            okHttpClient = new OkHttpClient();
-            okHttpClient.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-            okHttpClient.setReadTimeout(5000, TimeUnit.MILLISECONDS);
-
-            JSONObject authorJsonObject = new JSONObject();
-
-            authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
-            authorJsonObject.put("authorName",author.getAuthorName());
-            authorJsonObject.put("authorPassword",author.getAuthorPassword());
-
+            okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(5000, TimeUnit.MILLISECONDS)
+                    .readTimeout(5000, TimeUnit.MILLISECONDS)
+                    .build();
 
             Request request =  new Request.Builder().url(RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor)
                     .addHeader("Content-Type","application/json")
-                    .post(RequestBody.create(MediaType.parse("application/json"), authorJsonObject.toString()))
+                    .post(RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(author)))
                     .build();
 
             okHttpClient.newCall(request).enqueue(new Callback() {
 
                 @Override
-                public void onFailure(Request request, IOException e) {
-                    Log.i(TAG,e.getMessage());
+                public void onFailure(Call call, IOException e) {
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -170,13 +168,11 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                     });
                 }
 
-                @Override
-                public void onResponse(final Response response) throws IOException {
-                    Log.i(TAG,""+response.body().string());
 
+                public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        final Author author = ToDoJsonParsers.getAuthor(new JSONObject(response.body().string()));
-                    }catch (JSONException e){
+                        author = new Gson().fromJson (response.body().string(),Author.class);
+                    }catch (IOException e){
                         Log.d(TAG,e.getMessage());
                     }
 

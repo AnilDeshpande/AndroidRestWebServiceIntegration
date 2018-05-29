@@ -3,6 +3,7 @@ package com.codetutor.androidrestwebserviceintegration.ui.activities;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRegistrationSuccess(Author author) {
+        Log.d(TAG,author.toString());
         AppConfig.saveUserName(author.getAuthorName());
         editTextUserName.setText(AppConfig.getSavedUserName());
     }
