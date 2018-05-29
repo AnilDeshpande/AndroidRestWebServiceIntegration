@@ -96,9 +96,9 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         progressBar.setVisibility(View.INVISIBLE);
 
         if(BuildConfig.DEBUG){
-            editTextUserName.setText("AppUser_1");
-            editTextEmailId.setText("AppUser_1@samplemail.com");
-            editTextPassword.setText("AppUser_1");
+            editTextUserName.setText("AnilDeshpande");
+            editTextEmailId.setText("AnilDeshpande@samplemail.com");
+            editTextPassword.setText("AnilDeshpande");
         }
 
     }
@@ -107,7 +107,7 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
     public void onClick(View view) {
         try{
             switch (view.getId()){
-                case R.id.buttonRegister: login();break;
+                case R.id.buttonRegister: register();break;
                 case R.id.buttonCancel: dismiss();break;
             }
         }catch (Exception e){
@@ -116,7 +116,7 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
     }
 
-    private void login() throws Exception{
+    private void register() throws Exception{
         String userName=editTextUserName.getText().toString();
         String emailId = editTextEmailId.getText().toString();
         String password = editTextPassword.getText().toString();

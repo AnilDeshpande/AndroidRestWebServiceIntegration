@@ -3,24 +3,33 @@ package com.codetutor.androidrestwebserviceintegration.ui.activities;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.APICallListener;
+import com.codetutor.androidrestwebserviceintegration.network.AppNetworkRequest;
+import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
+import com.google.gson.Gson;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener, APICallListener {
 
     private  static String TAG = MainActivity.class.getSimpleName();
 
     TextView textViewRegister;
     Switch switchEndPoint;
     EditText editTextUserName, editTextPassword;
+
+    Button buttonLogin;
 
 
     @Override
@@ -30,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         editTextUserName = (EditText)findViewById(R.id.editTextUserName);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+
+        buttonLogin = (Button)findViewById(R.id.buttonLogin);
+        buttonLogin.setOnClickListener(this);
 
         if(AppConfig.getSavedUserName()!=null){
             editTextUserName.setText(AppConfig.getSavedUserName());
@@ -66,7 +78,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.textViewRegister: showRegisterDialog(); break;
+            case R.id.buttonLogin: login(); break;
         }
+    }
+
+    private void login(){
+        String password = editTextPassword.getText().toString();
+        Author author = AppConfig.getSavedSuccessfulAuthor();
+        author.setAuthorPassword(password);
+        if(Util.isAppOnLine(this)){
+            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getReqestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, this,author);
+            appNetworkRequest.makeBackEndRequest();
+        }
+
     }
 
     private void showRegisterDialog(){
@@ -78,6 +102,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRegistrationSuccess(Author author) {
         AppConfig.saveUserName(author.getAuthorName());
+        AppConfig.saveSuccessfulLoginUser(new Gson().toJson(author).toString());
         editTextUserName.setText(AppConfig.getSavedUserName());
+    }
+
+    @Override
+    public void onCallBackFailure(String message) {
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onCallBackSuccess(Object o) {
+        Log.d(TAG,""+o);
     }
 }

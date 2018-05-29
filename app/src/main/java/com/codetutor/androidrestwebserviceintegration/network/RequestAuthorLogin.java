@@ -3,6 +3,7 @@ package com.codetutor.androidrestwebserviceintegration.network;
 import android.util.Log;
 
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
@@ -12,15 +13,15 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
-class RequestRegisterAuthor extends AppNetworkRequest{
+public class RequestAuthorLogin extends  AppNetworkRequest{
 
-    public static final String TAG = RequestRegisterAuthor.class.getSimpleName();
+    public static final String TAG = RequestAuthorLogin.class.getSimpleName();
 
-    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login;
 
     Request request;
 
-    RequestRegisterAuthor(APICallListener apiCallListener, Object requestBody){
+    RequestAuthorLogin(APICallListener apiCallListener, Object requestBody){
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)
@@ -50,7 +51,7 @@ class RequestRegisterAuthor extends AppNetworkRequest{
             @Override
             public void onResponse(final Response response) throws IOException {
                 try{
-                    responseObject = new GsonBuilder().create().fromJson(response.body().string(), Author.class);
+                    responseObject = new GsonBuilder().create().fromJson(response.body().string(), LoginToken.class);
                 }catch (IOException e){
                     Log.d(TAG,e.getMessage());
                 }
@@ -65,4 +66,5 @@ class RequestRegisterAuthor extends AppNetworkRequest{
             }
         });
     }
+
 }

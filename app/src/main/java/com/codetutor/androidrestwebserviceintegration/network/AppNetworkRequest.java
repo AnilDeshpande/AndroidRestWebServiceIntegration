@@ -56,8 +56,12 @@ public abstract class AppNetworkRequest implements Runnable{
             case REQUEST_REGISTER_AUTHOR:
                 appNetworkRequest = getRegisterAuthorRequest(REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, apiCallListener, requestBody);
                 break;
-            case REQUEST_LOGIN_AUTHOR: break;
-            case REQUEST_LOGOUT_AUTHOR: break;
+            case REQUEST_LOGIN_AUTHOR:
+                appNetworkRequest = getLoginAuthorRequest(REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, apiCallListener, requestBody);
+                break;
+            case REQUEST_LOGOUT_AUTHOR:
+                appNetworkRequest = getSingoutRequest(REQUEST_TYPE.REQUEST_LOGOUT_AUTHOR, apiCallListener, requestBody);
+                break;
             case REQUEST_ADD_TODO_ITEM: break;
             case REQUEST_GET_TODOS: break;
             case REQUEST_DELETE_TODO: break;
@@ -70,6 +74,16 @@ public abstract class AppNetworkRequest implements Runnable{
     private static AppNetworkRequest getRegisterAuthorRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestBody){
         Author author = (Author)requestBody;
         return new RequestRegisterAuthor(apiCallListener, new GsonBuilder().create().toJson(author));
+    }
+
+    private static AppNetworkRequest getLoginAuthorRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestObject){
+        Author author = (Author)requestObject;
+        return new RequestAuthorLogin(apiCallListener, new GsonBuilder().create().toJson(author));
+    }
+
+    private static AppNetworkRequest getSingoutRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestObject){
+        Author author = (Author) requestObject;
+        return  new RequestSignOut(apiCallListener,new GsonBuilder().create().toJson(author));
     }
 
 

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.GsonBuilder;
 
 /**
  * Created by anildeshpande on 5/2/18.
@@ -39,6 +41,25 @@ public class AppConfig extends Application {
     public static void saveUserName(String username){
         editor.putString("username",username);
         editor.commit();
+    }
+
+    public static void saveSuccessfulLoginUser(String jsonString){
+        editor.putString("user",jsonString);
+        editor.commit();
+    }
+
+    public static Author getSavedSuccessfulAuthor(){
+        Author author = new GsonBuilder().create().fromJson(sharedPreferences.getString("user",null), Author.class);
+        return author;
+    }
+
+    public static void saveSessionTokenValue(String token){
+        editor.putString("token",token);
+        editor.commit();
+    }
+
+    public static String getSessionTokenValue(String token){
+        return sharedPreferences.getString("token",null);
     }
 
     public static  String getSavedUserName(){

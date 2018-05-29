@@ -12,16 +12,15 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
-class RequestRegisterAuthor extends AppNetworkRequest{
+public class RequestSignOut extends  AppNetworkRequest {
 
-    public static final String TAG = RequestRegisterAuthor.class.getSimpleName();
+    public static final String TAG = RequestSignOut.class.getSimpleName();
 
-    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.logout;
 
     Request request;
 
-    RequestRegisterAuthor(APICallListener apiCallListener, Object requestBody){
-
+    RequestSignOut(APICallListener apiCallListener, Object requestBody){
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
@@ -50,7 +49,9 @@ class RequestRegisterAuthor extends AppNetworkRequest{
             @Override
             public void onResponse(final Response response) throws IOException {
                 try{
-                    responseObject = new GsonBuilder().create().fromJson(response.body().string(), Author.class);
+                    if(response.code()==204){
+                        responseObject = new GsonBuilder().create().fromJson(response.body().string(), null);
+                    }
                 }catch (IOException e){
                     Log.d(TAG,e.getMessage());
                 }
