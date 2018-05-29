@@ -51,7 +51,11 @@ public class RequestAuthorLogin extends  AppNetworkRequest{
             @Override
             public void onResponse(final Response response) throws IOException {
                 try{
-                    responseObject = new GsonBuilder().create().fromJson(response.body().string(), LoginToken.class);
+                    if(response.code()==201){
+                        responseObject = new GsonBuilder().create().fromJson(response.body().string(), LoginToken.class);
+                    }else{
+                        throw new IOException("Authentication Failed");
+                    }
                 }catch (IOException e){
                     Log.d(TAG,e.getMessage());
                 }

@@ -1,6 +1,7 @@
 package com.codetutor.androidrestwebserviceintegration.ui.activities;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.codetutor.androidrestwebserviceintegration.network.APICallListener;
 import com.codetutor.androidrestwebserviceintegration.network.AppNetworkRequest;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
 import com.google.gson.Gson;
 
@@ -113,6 +115,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCallBackSuccess(Object o) {
-        Log.d(TAG,""+o);
+        Toast.makeText(this,"Login Successful",Toast.LENGTH_LONG).show();
+        AppConfig.saveSessionTokenValue(((LoginToken)o).getToken());
+
+        Intent intent = new Intent(this,HomeActivity.class);
+        startActivity(intent);
     }
+
+
 }
