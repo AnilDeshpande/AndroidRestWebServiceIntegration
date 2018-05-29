@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import com.codetutor.androidrestwebserviceintegration.R;
 
-import java.util.List;
-
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editTextNewToDoString, editTextToDoId, editTextNewToDo, editTextPlace;
