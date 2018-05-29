@@ -58,7 +58,7 @@ public class AppConfig extends Application {
         editor.commit();
     }
 
-    public static String getSessionTokenValue(String token){
+    public static String getSessionTokenValue(){
         return sharedPreferences.getString("token",null);
     }
 

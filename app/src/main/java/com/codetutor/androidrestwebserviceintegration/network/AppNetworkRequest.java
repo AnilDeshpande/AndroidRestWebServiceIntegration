@@ -5,9 +5,10 @@ import android.os.Handler;
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 
 public abstract class AppNetworkRequest implements Runnable{
@@ -34,6 +35,7 @@ public abstract class AppNetworkRequest implements Runnable{
     }
 
     public static final String CONTENT_TYPE = "Content-Type";
+    public static final String TOKEN = "token";
     public static final String JSON_CONTENT_TYPE  = "application/json";
 
     public static final int CONNECT_TIMEOUT=5000;
@@ -42,9 +44,10 @@ public abstract class AppNetworkRequest implements Runnable{
     AppNetworkRequest(APICallListener apiCallListener){
         handler = new Handler(AppConfig.getContext().getMainLooper());
         this.apiCallListener=apiCallListener;
-        okHttpClient = new OkHttpClient();
-        okHttpClient.setConnectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+        okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+                .build();
     }
 
     public static AppNetworkRequest getReqestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener,Object requestBody){

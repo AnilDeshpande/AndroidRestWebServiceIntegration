@@ -2,15 +2,16 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
-import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class RequestSignOut extends  AppNetworkRequest {
 
@@ -37,7 +38,7 @@ public class RequestSignOut extends  AppNetworkRequest {
         okHttpClient.newCall(request).enqueue(new Callback() {
 
             @Override
-            public void onFailure(Request request, final IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -47,7 +48,7 @@ public class RequestSignOut extends  AppNetworkRequest {
             }
 
             @Override
-            public void onResponse(final Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 try{
                     if(response.code()==204){
                         responseObject = new GsonBuilder().create().fromJson(response.body().string(), null);
