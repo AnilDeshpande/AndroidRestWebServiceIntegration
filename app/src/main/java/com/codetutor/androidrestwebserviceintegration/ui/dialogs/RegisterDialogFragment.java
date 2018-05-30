@@ -73,10 +73,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Holo_Light_Dialog);
-        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Light_Dialog);
-        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Dialog);
-        //setStyle(DialogFragment.STYLE_NO_TITLE,android.R.style.Theme_Holo_Light_Dialog);
-        //setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Holo_Light);
     }
 
     @Nullable
@@ -121,7 +117,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
             editTextEmailId.setText("AnilDeshpande@samplemail.com");
             editTextPassword.setText("AnilDeshpande");
         }
-
     }
 
     @Override
@@ -134,7 +129,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         }catch (Exception e){
              Log.i(TAG,e.getMessage());
         }
-
     }
 
     private void login() throws Exception{
@@ -167,7 +161,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                         }
                     });
                 }
-
 
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
