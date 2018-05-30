@@ -15,11 +15,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewToDos;
     private Button buttonAddToDo, buttonRemoveToDo, buttonModifyToDo;
 
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

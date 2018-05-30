@@ -22,7 +22,7 @@ import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
 import com.google.gson.Gson;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener, APICallListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener, APICallListener {
 
     private  static String TAG = MainActivity.class.getSimpleName();
 
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Author author = AppConfig.getSavedSuccessfulAuthor();
         author.setAuthorPassword(password);
         if(Util.isAppOnLine(this)){
+            showBusyDialog("Logging In");
             AppNetworkRequest appNetworkRequest = AppNetworkRequest.getReqestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, this,author);
             appNetworkRequest.makeBackEndRequest();
         }
@@ -109,17 +110,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCallBackFailure(String message) {
+        dismissBusyDialog();
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onCallBackSuccess(Object o) {
+        dismissBusyDialog();
         Toast.makeText(this,"Login Successful",Toast.LENGTH_LONG).show();
         AppConfig.saveSessionTokenValue(((LoginToken)o).getToken());
 
         Intent intent = new Intent(this,HomeActivity.class);
         startActivity(intent);
     }
+
+
 
 
 }
