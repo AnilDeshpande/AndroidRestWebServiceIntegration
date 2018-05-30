@@ -123,8 +123,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Intent intent = new Intent(this,HomeActivity.class);
         startActivity(intent);
     }
-
-
-
-
 }
