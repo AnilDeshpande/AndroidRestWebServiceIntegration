@@ -13,16 +13,6 @@ import okhttp3.OkHttpClient;
 
 public abstract class AppNetworkRequest implements Runnable{
 
-    Handler handler;
-
-
-
-    APICallListener apiCallListener;
-
-    OkHttpClient okHttpClient;
-
-    Object responseObject;
-
     public static enum REQUEST_TYPE{
         REQUEST_REGISTER_AUTHOR,
         REQUEST_LOGIN_AUTHOR,
@@ -41,13 +31,25 @@ public abstract class AppNetworkRequest implements Runnable{
     public static final int CONNECT_TIMEOUT=5000;
     public static final int READ_TIMEOUT=5000;
 
+    Handler handler;
+
+
+
+    APICallListener apiCallListener;
+
+    static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .build();;
+
+    Object responseObject;
+
+
+
     AppNetworkRequest(APICallListener apiCallListener){
         handler = new Handler(AppConfig.getContext().getMainLooper());
         this.apiCallListener=apiCallListener;
-        okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-                .build();
+
     }
 
     public static AppNetworkRequest getReqestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener,Object requestBody){
