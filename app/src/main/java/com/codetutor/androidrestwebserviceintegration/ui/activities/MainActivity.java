@@ -18,6 +18,7 @@ import com.codetutor.androidrestwebserviceintegration.network.APICallListener;
 import com.codetutor.androidrestwebserviceintegration.network.AppNetworkRequest;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
 import com.google.gson.Gson;
@@ -117,10 +118,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onCallBackSuccess(Object o) {
         dismissBusyDialog();
-        Toast.makeText(this,"Login Successful",Toast.LENGTH_LONG).show();
-        AppConfig.saveSessionTokenValue(((LoginToken)o).getToken());
+        try{
+            AppConfig.saveSessionTokenValue(((LoginToken)o).getToken());
+            Toast.makeText(this,"Login Successful",Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this,HomeActivity.class);
+            startActivity(intent);
+        }catch (ClassCastException e){
+            Error error = (Error)o;
+            Toast.makeText(this,error.toString(),Toast.LENGTH_LONG).show();
+        }
 
-        Intent intent = new Intent(this,HomeActivity.class);
-        startActivity(intent);
+
+
     }
 }

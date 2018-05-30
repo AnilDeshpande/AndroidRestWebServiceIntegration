@@ -2,6 +2,7 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.google.gson.GsonBuilder;
 
@@ -55,7 +56,7 @@ public class RequestAuthorLogin extends  AppNetworkRequest{
                     if(response.code()==201){
                         responseObject = new GsonBuilder().create().fromJson(response.body().string(), LoginToken.class);
                     }else{
-                        throw new IOException("Authentication Failed");
+                        responseObject  = new Error(response.code(),response.message());
                     }
                 }catch (IOException e){
                     Log.d(TAG,e.getMessage());
@@ -64,7 +65,10 @@ public class RequestAuthorLogin extends  AppNetworkRequest{
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        if(responseObject!=null){
+                            apiCallListener.onCallBackSuccess(responseObject);
+                        }
+
                     }
                 });
 

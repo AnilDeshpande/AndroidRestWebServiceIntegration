@@ -6,14 +6,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.APICallListener;
+import com.codetutor.androidrestwebserviceintegration.network.AppNetworkRequest;
+import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.List;
+
+public class HomeActivity extends BaseActivity implements View.OnClickListener, APICallListener{
 
     private EditText editTextNewToDoString, editTextToDoId, editTextNewToDo, editTextPlace;
     private TextView textViewToDos;
     private Button buttonAddToDo, buttonRemoveToDo, buttonModifyToDo;
+
+    List<ToDoItem> toDoItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +45,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         buttonRemoveToDo.setOnClickListener(this);
         buttonAddToDo.setOnClickListener(this);
 
+        getToDoItems();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setNewList();
     }
 
     @Override
@@ -54,24 +64,55 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setNewList(){
-        textViewToDos.setText(null);
+    private void setNewList(List<ToDoItem> toDoItems){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(ToDoItem item: toDoItems){
+            stringBuilder.append(item.toString()+"\n");
+        }
+        textViewToDos.setText(stringBuilder.toString());
     }
 
     private void addNewToDo(){
 
-        setNewList();
+
     }
 
     private void removeToDo(){
 
-        setNewList();
+
     }
 
     private void modifyToDo(){
         int id=Integer.parseInt(editTextToDoId.getText().toString());
         String newToDO=editTextNewToDo.getText().toString();
+    }
 
-        setNewList();
+    private void getToDoItems(){
+        if(Util.isAppOnLine(getApplicationContext())){
+            showBusyDialog("Fetching ToDos");
+            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getReqestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_GET_TODOS,this,null);
+            appNetworkRequest.makeBackEndRequest();
+
+        }else{
+            Toast.makeText(getApplicationContext(),"Network Issue",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCallBackSuccess(Object o) {
+        dismissBusyDialog();
+        try {
+            toDoItems = (List<ToDoItem>)o;
+            setNewList(toDoItems);
+        }catch (ClassCastException e){
+            Error error = (Error)o;
+            Toast.makeText(this,error.toString(),Toast.LENGTH_SHORT).toString();
+        }
+    }
+
+    @Override
+    public void onCallBackFailure(String message) {
+        dismissBusyDialog();
+        Toast.makeText(this, message,Toast.LENGTH_SHORT).show();
     }
 }

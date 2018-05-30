@@ -68,7 +68,9 @@ public abstract class AppNetworkRequest implements Runnable{
                 appNetworkRequest = getSingoutRequest(REQUEST_TYPE.REQUEST_LOGOUT_AUTHOR, apiCallListener, requestBody);
                 break;
             case REQUEST_ADD_TODO_ITEM: break;
-            case REQUEST_GET_TODOS: break;
+            case REQUEST_GET_TODOS:
+                appNetworkRequest = getToDosRequest(REQUEST_TYPE.REQUEST_GET_TODOS,apiCallListener,null);
+                break;
             case REQUEST_DELETE_TODO: break;
             case REQUEST_MODIFY_TODO: break;
 
@@ -89,6 +91,10 @@ public abstract class AppNetworkRequest implements Runnable{
     private static AppNetworkRequest getSingoutRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestObject){
         Author author = (Author) requestObject;
         return  new RequestSignOut(apiCallListener,new GsonBuilder().create().toJson(author));
+    }
+
+    private static AppNetworkRequest getToDosRequest(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestObject){
+        return new RequestGetToDos(apiCallListener,null);
     }
 
 

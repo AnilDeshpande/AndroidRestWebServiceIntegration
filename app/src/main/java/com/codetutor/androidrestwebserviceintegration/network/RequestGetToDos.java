@@ -2,9 +2,13 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
+import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
+import com.codetutor.androidrestwebserviceintegration.restbean.ToDoListResponse;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import okhttp3.Call;
@@ -15,7 +19,7 @@ import okhttp3.Response;
 public class RequestGetToDos extends  AppNetworkRequest{
     public static final String TAG = RequestRegisterAuthor.class.getSimpleName();
 
-    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.getToDoItem;
+    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.getToDoItem+ AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId();
 
     Request request;
 
@@ -23,7 +27,7 @@ public class RequestGetToDos extends  AppNetworkRequest{
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)
-                .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
+                .addHeader(AppNetworkRequest.TOKEN,AppConfig.getSessionTokenValue())
                 .get()
                 .build();
     }
@@ -49,7 +53,8 @@ public class RequestGetToDos extends  AppNetworkRequest{
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 try {
-                    responseObject = new Gson().fromJson(response.body().string(), List.class);
+
+                    responseObject = new Gson().fromJson(response.body().string(), ToDoListResponse.class);
                 } catch (IOException e) {
                     Log.d(TAG, e.getMessage());
                 }

@@ -132,11 +132,17 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
     @Override
     public void onCallBackSuccess(Object o) {
         progressBar.setVisibility(View.INVISIBLE);
-        Author author = (Author)o;
-        if(registrationListener!=null){
-            registrationListener.onRegistrationSuccess(author);
+        try{
+            Author author = (Author)o;
+            if(registrationListener!=null){
+                registrationListener.onRegistrationSuccess(author);
+            }
+            Toast.makeText(getActivity(),getString(R.string.regisrtation_successful),Toast.LENGTH_LONG).show();
+        }catch (ClassCastException e){
+            Error error = (Error)o;
+            Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
         }
-        Toast.makeText(getActivity(),getString(R.string.regisrtation_successful),Toast.LENGTH_LONG).show();
+
         dismiss();
     }
 
