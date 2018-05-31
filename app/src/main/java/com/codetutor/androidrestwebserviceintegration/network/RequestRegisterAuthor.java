@@ -22,12 +22,12 @@ class RequestRegisterAuthor extends AppNetworkRequest{
 
     Request request;
 
-    RequestRegisterAuthor(APICallListener apiCallListener, Object requestBody){
+    RequestRegisterAuthor(APICallListener apiCallListener, Object jsonRequestBody){
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
-                .post(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), requestBody.toString()))
+                .post(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
 

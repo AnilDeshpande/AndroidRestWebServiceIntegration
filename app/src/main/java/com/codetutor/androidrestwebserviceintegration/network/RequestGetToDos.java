@@ -23,7 +23,7 @@ public class RequestGetToDos extends  AppNetworkRequest{
 
     Request request;
 
-    RequestGetToDos(APICallListener apiCallListener, Object requestBody){
+    RequestGetToDos(APICallListener apiCallListener, Object jsonRequestBody){
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)

@@ -2,6 +2,7 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 import com.google.gson.Gson;
 
@@ -10,7 +11,9 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class RequestModifyToDo extends AppNetworkRequest{
@@ -21,12 +24,12 @@ public class RequestModifyToDo extends AppNetworkRequest{
 
     Request request;
 
-    RequestModifyToDo(APICallListener apiCallListener, Object requestBody){
+    RequestModifyToDo(APICallListener apiCallListener, Object jsonRequestBody){
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
-                .get()
+                .put(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
 
@@ -50,10 +53,10 @@ public class RequestModifyToDo extends AppNetworkRequest{
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                try {
+                if(response.code()==202) {
                     responseObject = new Gson().fromJson(response.body().string(), ToDoItem.class);
-                } catch (IOException e) {
-                    Log.d(TAG, e.getMessage());
+                } else {
+                    responseObject = new Error(response.code(), response.message());
                 }
 
                 handler.post(new Runnable() {

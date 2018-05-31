@@ -2,6 +2,8 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -18,12 +20,12 @@ public class RequestDeleteToDo extends AppNetworkRequest{
 
     Request request;
 
-    RequestDeleteToDo(APICallListener apiCallListener, Object requestBody){
+    RequestDeleteToDo(APICallListener apiCallListener, Object jsonRequestBody){
 
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
-                .delete(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), requestBody.toString()))
+                .delete(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
 
@@ -47,17 +49,12 @@ public class RequestDeleteToDo extends AppNetworkRequest{
 
             @Override
             public void onResponse(Call call,final Response response) throws IOException {
-                try{
-                    if(response.code()==204){
-                        responseObject = null;
-                    }else{
-                        throw new IOException("Couldn't delete");
-                    }
 
-                }catch (IOException e){
-                    Log.d(TAG,e.getMessage());
+                if(response.code()==204){
+                    responseObject = null;
+                }else{
+                    responseObject = new Error(response.code(),response.message());
                 }
-
                 handler.post(new Runnable() {
                     @Override
                     public void run() {

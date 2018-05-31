@@ -21,11 +21,11 @@ public class RequestSignOut extends  AppNetworkRequest {
 
     Request request;
 
-    RequestSignOut(APICallListener apiCallListener, Object requestBody){
+    RequestSignOut(APICallListener apiCallListener, Object jsonRequestBody){
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
-                .post(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), requestBody.toString()))
+                .post(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
 
