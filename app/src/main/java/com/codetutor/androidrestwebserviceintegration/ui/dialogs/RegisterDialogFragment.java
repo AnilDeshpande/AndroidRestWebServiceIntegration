@@ -124,7 +124,7 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
-            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getReqestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_REGISTER_AUTHOR, this,author);
+            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_REGISTER_AUTHOR, this,author);
             appNetworkRequest.makeBackEndRequest();
         }
     }

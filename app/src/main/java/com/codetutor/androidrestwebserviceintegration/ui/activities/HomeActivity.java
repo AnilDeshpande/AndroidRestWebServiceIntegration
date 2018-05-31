@@ -1,7 +1,6 @@
 package com.codetutor.androidrestwebserviceintegration.ui.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -90,7 +89,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private void getToDoItems(){
         if(Util.isAppOnLine(getApplicationContext())){
             showBusyDialog("Fetching ToDos");
-            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getReqestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_GET_TODOS,this,null);
+            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_GET_TODOS,this,null);
             appNetworkRequest.makeBackEndRequest();
 
         }else{

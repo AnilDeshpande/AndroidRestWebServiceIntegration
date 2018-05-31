@@ -55,10 +55,9 @@ public abstract class AppNetworkRequest implements Runnable{
 
     }
 
-    public static AppNetworkRequest getReqestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener,Object requestBodyObject){
+    public static AppNetworkRequest getRequestInstance(REQUEST_TYPE requestType, APICallListener apiCallListener, Object requestBodyObject){
 
         AppNetworkRequest appNetworkRequest=null;
-
 
         switch (requestType){
             case REQUEST_REGISTER_AUTHOR:
@@ -71,7 +70,7 @@ public abstract class AppNetworkRequest implements Runnable{
                 appNetworkRequest = getSingoutRequest(apiCallListener, requestBodyObject);
                 break;
             case REQUEST_ADD_TODO_ITEM:
-
+                appNetworkRequest = getAddToDoRequest(apiCallListener,requestBodyObject);
                 break;
             case REQUEST_GET_TODOS:
                 appNetworkRequest = getToDosRequest(apiCallListener,null);
@@ -79,8 +78,9 @@ public abstract class AppNetworkRequest implements Runnable{
             case REQUEST_DELETE_TODO:
                 appNetworkRequest = getDeleteToDoRequest(apiCallListener,requestBodyObject);
                 break;
-            case REQUEST_MODIFY_TODO: break;
-
+            case REQUEST_MODIFY_TODO:
+                appNetworkRequest = getModifyToDoRequest(apiCallListener,requestBodyObject);
+                break;
         }
         return appNetworkRequest;
     }
