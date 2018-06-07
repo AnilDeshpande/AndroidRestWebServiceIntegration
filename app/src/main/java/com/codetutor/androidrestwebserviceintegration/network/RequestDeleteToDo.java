@@ -2,7 +2,9 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Error;
+import com.codetutor.androidrestwebserviceintegration.restbean.Success;
 
 import java.io.IOException;
 
@@ -16,7 +18,7 @@ import okhttp3.Response;
 public class RequestDeleteToDo extends AppNetworkRequest{
     public static final String TAG = RequestDeleteToDo.class.getSimpleName();
 
-    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.deleteToDo;
 
     Request request;
 
@@ -25,6 +27,7 @@ public class RequestDeleteToDo extends AppNetworkRequest{
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
+                .addHeader(AppNetworkRequest.TOKEN, AppConfig.getSessionTokenValue())
                 .delete(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
@@ -51,14 +54,14 @@ public class RequestDeleteToDo extends AppNetworkRequest{
             public void onResponse(Call call,final Response response) throws IOException {
 
                 if(response.code()==204){
-                    responseObject = null;
+                    responseObject = new Success(response.code(),response.message());
                 }else{
                     responseObject = new Error(response.code(),response.message());
                 }
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_DELETE_TODO, responseObject);
                     }
                 });
 

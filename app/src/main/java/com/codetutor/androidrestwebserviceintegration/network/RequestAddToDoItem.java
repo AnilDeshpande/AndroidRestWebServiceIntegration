@@ -3,10 +3,12 @@ package com.codetutor.androidrestwebserviceintegration.network;
 import android.util.Log;
 
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -14,12 +16,15 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
+import okio.BufferedSource;
 
 public class RequestAddToDoItem extends AppNetworkRequest{
 
     public static final String TAG = RequestRegisterAuthor.class.getSimpleName();
 
-    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+    String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.addToDoItem;
 
     Request request;
 
@@ -52,17 +57,20 @@ public class RequestAddToDoItem extends AppNetworkRequest{
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(Call call, final Response response){
+                ResponseBody localresponseBody = null;
                 try{
                     responseObject = new GsonBuilder().create().fromJson(response.body().string(), ToDoItem.class);
-                }catch (IOException e){
-                    Log.d(TAG,e.getMessage());
+                }catch (IOException e) {
+                    responseObject = new Error(response.code(),e.getMessage());
+                }catch (Exception e){
+                    responseObject = new Error(response.code(),response.message());
                 }
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_ADD_TODO_ITEM, responseObject);
                     }
                 });
 

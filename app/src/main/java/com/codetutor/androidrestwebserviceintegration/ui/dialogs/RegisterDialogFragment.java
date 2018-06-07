@@ -130,7 +130,7 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
     }
 
     @Override
-    public void onCallBackSuccess(Object o) {
+    public void onCallBackSuccess(AppNetworkRequest.REQUEST_TYPE requestType, Object o) {
         progressBar.setVisibility(View.INVISIBLE);
         try{
             Author author = (Author)o;

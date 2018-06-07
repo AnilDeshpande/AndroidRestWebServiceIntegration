@@ -54,13 +54,14 @@ public class RequestSignOut extends  AppNetworkRequest {
                         responseObject = new GsonBuilder().create().fromJson(response.body().string(), null);
                     }
                 }catch (IOException e){
+                    e.printStackTrace();
                     Log.d(TAG,e.getMessage());
                 }
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_LOGOUT_AUTHOR, responseObject);
                     }
                 });
 

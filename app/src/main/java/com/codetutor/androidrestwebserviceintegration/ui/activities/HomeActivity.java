@@ -7,13 +7,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.APICallListener;
 import com.codetutor.androidrestwebserviceintegration.network.AppNetworkRequest;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
+import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
+import com.codetutor.androidrestwebserviceintegration.restbean.Success;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 
 import java.util.List;
+
+import okhttp3.RequestBody;
 
 public class HomeActivity extends BaseActivity implements View.OnClickListener, APICallListener{
 
@@ -22,6 +28,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private Button buttonAddToDo, buttonRemoveToDo, buttonModifyToDo;
 
     List<ToDoItem> toDoItems;
+
+    ToDoItem itemToBeRemoved;
+
+    ToDoItem itemToBeModified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,18 +82,62 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void addNewToDo(){
+        String stringToDoString = editTextNewToDoString.getText().toString();
+        String stringPlace = editTextPlace.getText().toString();
 
+        ToDoItem item = new ToDoItem(0,stringToDoString, AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId(),stringPlace);
+        if(Util.isAppOnLine(getApplicationContext())){
+            showBusyDialog("Adding ToDo");
+            AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_ADD_TODO_ITEM,this,item);
+            appNetworkRequest.makeBackEndRequest();
+
+        }else{
+            toastMessage("Network Issue",Toast.LENGTH_SHORT);
+        }
 
     }
 
     private void removeToDo(){
+        long removiewId = Long.parseLong(editTextToDoId.getText().toString());
+        itemToBeRemoved = getToDoItemById(removiewId);
+        if(itemToBeRemoved!=null){
+            if(Util.isAppOnLine(getApplicationContext())){
+                showBusyDialog("Deleting ToDo");
+                AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_DELETE_TODO,this,itemToBeRemoved);
+                appNetworkRequest.makeBackEndRequest();
+
+            }else{
+                toastMessage("Network Issue",Toast.LENGTH_SHORT);
+            }
+        }else{
+            toastMessage("Please select existing id", Toast.LENGTH_LONG);
+        }
+
 
 
     }
 
     private void modifyToDo(){
         int id=Integer.parseInt(editTextToDoId.getText().toString());
-        String newToDO=editTextNewToDo.getText().toString();
+        String newToDOString=editTextNewToDo.getText().toString();
+
+        ToDoItem currentToDoItem = getToDoItemById(id);
+
+        if(currentToDoItem!=null){
+            ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
+            proposedToBeModified.setTodoString(editTextNewToDo.getText().toString());
+            if(Util.isAppOnLine(getApplicationContext())){
+                ModifyToDoPayloadBean modifyToDoPayloadBean = new ModifyToDoPayloadBean(currentToDoItem,proposedToBeModified);
+                AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_MODIFY_TODO,this, modifyToDoPayloadBean);
+                appNetworkRequest.makeBackEndRequest();
+            }else{
+                toastMessage("Network Issue",Toast.LENGTH_SHORT);
+
+            }
+        }else{
+            toastMessage("Please select existing id", Toast.LENGTH_LONG);
+        }
+
     }
 
     private void getToDoItems(){
@@ -91,27 +145,83 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             showBusyDialog("Fetching ToDos");
             AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_GET_TODOS,this,null);
             appNetworkRequest.makeBackEndRequest();
-
         }else{
-            Toast.makeText(getApplicationContext(),"Network Issue",Toast.LENGTH_SHORT).show();
+            toastMessage("Network Issue",Toast.LENGTH_SHORT);
         }
     }
 
     @Override
-    public void onCallBackSuccess(Object o) {
+    public void onCallBackSuccess(AppNetworkRequest.REQUEST_TYPE requestType, Object o) {
+
         dismissBusyDialog();
         try {
-            toDoItems = (List<ToDoItem>)o;
-            setNewList(toDoItems);
+            switch (requestType){
+                case REQUEST_GET_TODOS:
+                    if(o!=null){
+                        toDoItems = (List<ToDoItem>)o;
+                        setNewList(toDoItems);
+                        if(toDoItems.size()==0){
+                            toastMessage("No todo items", Toast.LENGTH_LONG);
+                        }
+                    }
+                    break;
+
+                case REQUEST_ADD_TODO_ITEM:
+                    getToDoItems();
+                    toastMessage("Added",Toast.LENGTH_LONG);
+                    break;
+                case REQUEST_DELETE_TODO:
+                    Success success = (Success)o;
+                    toDoItems.remove(itemToBeRemoved);
+                    setNewList(toDoItems);
+                    toastMessage("Deleted",Toast.LENGTH_LONG);
+                    break;
+                case REQUEST_MODIFY_TODO:
+                    ToDoItem item = (ToDoItem)o;
+                    updateToDoItem(item);
+                    toastMessage("Modified",Toast.LENGTH_LONG);
+                    break;
+            }
+
+            clearEditTexsts();
+
         }catch (ClassCastException e){
             Error error = (Error)o;
-            Toast.makeText(this,error.toString(),Toast.LENGTH_SHORT).toString();
+            toastMessage(error.getErrorMessage(), Toast.LENGTH_LONG);
         }
     }
 
     @Override
     public void onCallBackFailure(String message) {
         dismissBusyDialog();
-        Toast.makeText(this, message,Toast.LENGTH_SHORT).show();
+        toastMessage(message,Toast.LENGTH_SHORT);
+    }
+
+    private ToDoItem getToDoItemById(long id){
+        ToDoItem item = null;
+        for(ToDoItem doItem: toDoItems){
+            if(doItem.getId()==id){
+                item = doItem;
+                break;
+            }
+        }
+
+        return item;
+    }
+
+    private void updateToDoItem(ToDoItem proposedItem){
+        ToDoItem item = getToDoItemById(proposedItem.getId());
+        if(item!=null){
+            toDoItems.remove(item);
+            toDoItems.add(proposedItem);
+            setNewList(toDoItems);
+        }
+    }
+
+    private void clearEditTexsts(){
+        editTextNewToDo.clearComposingText();
+        editTextNewToDoString.clearComposingText();
+        editTextPlace.clearComposingText();
+        editTextToDoId.clearComposingText();
     }
 }

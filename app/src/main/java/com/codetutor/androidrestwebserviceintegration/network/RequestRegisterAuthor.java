@@ -13,6 +13,7 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 class RequestRegisterAuthor extends AppNetworkRequest{
 
@@ -54,13 +55,14 @@ class RequestRegisterAuthor extends AppNetworkRequest{
                 try{
                     responseObject = new GsonBuilder().create().fromJson(response.body().string(), Author.class);
                 }catch (IOException e){
+                    e.printStackTrace();
                     Log.d(TAG,e.getMessage());
                 }
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_REGISTER_AUTHOR, responseObject);
                     }
                 });
 

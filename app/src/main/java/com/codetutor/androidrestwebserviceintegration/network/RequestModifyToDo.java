@@ -2,6 +2,7 @@ package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.util.Log;
 
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 import com.google.gson.Gson;
@@ -18,7 +19,7 @@ import okhttp3.Response;
 
 public class RequestModifyToDo extends AppNetworkRequest{
 
-    public static final String TAG = RequestRegisterAuthor.class.getSimpleName();
+    public static final String TAG = RequestModifyToDo.class.getSimpleName();
 
     String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.modifyToDoUrl;
 
@@ -29,6 +30,7 @@ public class RequestModifyToDo extends AppNetworkRequest{
         super(apiCallListener);
         request =  new Request.Builder().url(url)
                 .addHeader(AppNetworkRequest.CONTENT_TYPE,AppNetworkRequest.JSON_CONTENT_TYPE)
+                .addHeader(AppNetworkRequest.TOKEN, AppConfig.getSessionTokenValue())
                 .put(RequestBody.create(MediaType.parse(AppNetworkRequest.JSON_CONTENT_TYPE), jsonRequestBody.toString()))
                 .build();
     }
@@ -52,17 +54,22 @@ public class RequestModifyToDo extends AppNetworkRequest{
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if(response.code()==202) {
-                    responseObject = new Gson().fromJson(response.body().string(), ToDoItem.class);
-                } else {
-                    responseObject = new Error(response.code(), response.message());
+            public void onResponse(Call call, final Response response)  {
+                try{
+                    if(response.code()==202) {
+                        responseObject = new Gson().fromJson(response.body().string(), ToDoItem.class);
+                    } else {
+                        responseObject = new Error(response.code(),response.message());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    responseObject = new Error(101,e.getMessage());
                 }
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        apiCallListener.onCallBackSuccess(responseObject);
+                        apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_MODIFY_TODO, responseObject);
                     }
                 });
 

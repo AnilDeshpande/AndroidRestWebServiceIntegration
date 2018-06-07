@@ -111,20 +111,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onCallBackFailure(String message) {
         dismissBusyDialog();
-        Toast.makeText(this,message,Toast.LENGTH_LONG).show();
+        toastMessage(message, Toast.LENGTH_LONG);
+
     }
 
     @Override
-    public void onCallBackSuccess(Object o) {
+    public void onCallBackSuccess(AppNetworkRequest.REQUEST_TYPE requestType, Object o) {
         dismissBusyDialog();
         try{
             AppConfig.saveSessionTokenValue(((LoginToken)o).getToken());
-            Toast.makeText(this,"Login Successful",Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,HomeActivity.class);
             startActivity(intent);
         }catch (ClassCastException e){
             Error error = (Error)o;
-            Toast.makeText(this,error.toString(),Toast.LENGTH_LONG).show();
+            toastMessage(error.toString(),Toast.LENGTH_LONG);
         }
 
 

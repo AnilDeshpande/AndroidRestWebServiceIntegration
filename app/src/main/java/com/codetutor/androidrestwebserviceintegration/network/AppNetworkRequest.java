@@ -36,14 +36,12 @@ public abstract class AppNetworkRequest implements Runnable{
 
     Handler handler;
 
-
-
-    APICallListener apiCallListener;
-
-    static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+    public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-            .build();;
+            .build();;;
+
+    APICallListener apiCallListener;
 
     Object responseObject;
 
@@ -119,8 +117,6 @@ public abstract class AppNetworkRequest implements Runnable{
         return new RequestModifyToDo(apiCallListener,new GsonBuilder().create().toJson(modifyToDoPayloadBean));
 
     }
-
-
 
     public abstract void makeBackEndRequest();
 

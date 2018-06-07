@@ -14,6 +14,7 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class RequestAuthorLogin extends  AppNetworkRequest{
 
@@ -53,12 +54,14 @@ public class RequestAuthorLogin extends  AppNetworkRequest{
             @Override
             public void onResponse(Call call,final Response response) throws IOException {
                 try{
+                    ResponseBody responseBody = response.body();
                     if(response.code()==201){
-                        responseObject = new GsonBuilder().create().fromJson(response.body().string(), LoginToken.class);
+                        responseObject = new GsonBuilder().create().fromJson(responseBody.string(), LoginToken.class);
                     }else{
                         responseObject  = new Error(response.code(),response.message());
                     }
                 }catch (IOException e){
+                    e.printStackTrace();
                     Log.d(TAG,e.getMessage());
                 }
 
@@ -66,7 +69,7 @@ public class RequestAuthorLogin extends  AppNetworkRequest{
                     @Override
                     public void run() {
                         if(responseObject!=null){
-                            apiCallListener.onCallBackSuccess(responseObject);
+                            apiCallListener.onCallBackSuccess(REQUEST_TYPE.REQUEST_LOGIN_AUTHOR, responseObject);
                         }
 
                     }
