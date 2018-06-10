@@ -3,6 +3,7 @@ package com.codetutor.androidrestwebserviceintegration.network;
 import android.util.Log;
 
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
@@ -53,10 +54,14 @@ class RequestRegisterAuthor extends AppNetworkRequest{
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 try{
-                    responseObject = new GsonBuilder().create().fromJson(response.body().string(), Author.class);
+                    if(response.code()==201){
+                        responseObject = new GsonBuilder().create().fromJson(response.body().string(), Author.class);
+                    }else {
+                        responseObject = new Error(response.code(),response.message());
+                    }
                 }catch (IOException e){
                     e.printStackTrace();
-                    Log.d(TAG,e.getMessage());
+                    responseObject = new Error(101,e.getMessage());
                 }
 
                 handler.post(new Runnable() {

@@ -39,7 +39,7 @@ public abstract class AppNetworkRequest implements Runnable{
     public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
             .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-            .build();;;
+            .build();
 
     APICallListener apiCallListener;
 
