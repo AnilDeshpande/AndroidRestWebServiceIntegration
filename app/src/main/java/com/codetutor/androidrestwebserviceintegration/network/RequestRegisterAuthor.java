@@ -1,7 +1,5 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
-import android.util.Log;
-
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.codetutor.androidrestwebserviceintegration.restbean.Error;
 import com.google.gson.GsonBuilder;
@@ -14,7 +12,6 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 class RequestRegisterAuthor extends AppNetworkRequest{
 
@@ -37,6 +34,7 @@ class RequestRegisterAuthor extends AppNetworkRequest{
     public void makeBackEndRequest() {
         new Thread(this).start();
     }
+
     @Override
     public void run() {
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -47,6 +45,7 @@ class RequestRegisterAuthor extends AppNetworkRequest{
                     @Override
                     public void run() {
                         apiCallListener.onCallBackFailure(e.getMessage());
+
                     }
                 });
             }

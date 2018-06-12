@@ -6,7 +6,6 @@ import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
@@ -36,16 +35,14 @@ public abstract class AppNetworkRequest implements Runnable{
 
     Handler handler;
 
-    public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-            .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-            .build();
-
     APICallListener apiCallListener;
 
     Object responseObject;
 
-
+    public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .readTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .connectTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            .build();
 
     AppNetworkRequest(APICallListener apiCallListener){
         handler = new Handler(AppConfig.getContext().getMainLooper());
