@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.APIInterface;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
@@ -35,6 +36,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
 /**
  * Created by anildeshpande on 2/21/18.
@@ -129,8 +138,25 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
-            Thread thread=new Thread(registerAuthor);
-            thread.start();
+
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .readTimeout(5000, TimeUnit.MILLISECONDS)
+                    .connectTimeout(5000, TimeUnit.MILLISECONDS)
+                    .addNetworkInterceptor(loggingInterceptor)
+                    .build();
+
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(RestAPIs.getBaseUrl()).addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build();
+
+
+            APIInterface apiService = retrofit.create(APIInterface.class);
+            //Call<Author> regsiterAuthorCall = apiService.registerAuthor("application/json",author);
+
+
+            /*Thread thread=new Thread(registerAuthor);
+            thread.start();*/
         }
     }
 

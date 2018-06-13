@@ -17,4 +17,14 @@ public interface ToDoAppRestAPI {
 
     String login = registerAuthor+"/login";
 
+    String logout = registerAuthor+"/signout";
+
+    String addToDoItem = "/todolists";
+
+    String getToDoItem = addToDoItem+"/";
+
+    String deleteToDo = addToDoItem;
+
+    String modifyToDoUrl = addToDoItem;
+
 }

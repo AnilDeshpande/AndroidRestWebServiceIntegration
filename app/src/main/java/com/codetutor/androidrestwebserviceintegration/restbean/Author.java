@@ -1,5 +1,7 @@
 package com.codetutor.androidrestwebserviceintegration.restbean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -8,9 +10,16 @@ import java.io.Serializable;
 
 public class Author implements Serializable {
 
+    @SerializedName("authorId")
     private long authorId;
+
+    @SerializedName("authorName")
     private String authorName;
+
+    @SerializedName("authorEmailId")
     private String authorEmailId;
+
+    @SerializedName("authorPassword")
     private String authorPassword;
 
     public Author() {
