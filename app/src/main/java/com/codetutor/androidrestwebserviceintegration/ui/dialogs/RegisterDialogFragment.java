@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.APIInterface;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
@@ -41,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
@@ -120,6 +123,12 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
+        if(BuildConfig.DEBUG){
+            editTextUserName.setText("AnilDeshpande");
+            editTextEmailId.setText("AnilDeshpande@samplemail.com");
+            editTextPassword.setText("AnilDeshpande");
+        }
+
     }
 
     @Override
@@ -152,89 +161,27 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
 
             APIInterface apiService = retrofit.create(APIInterface.class);
-            //Call<Author> regsiterAuthorCall = apiService.registerAuthor("application/json",author);
 
+            Call<Author> regsiterAuthorCall = apiService.registerAuthor(author);
+            regsiterAuthorCall.enqueue(new Callback<Author>(){
+                @Override
+                public void onResponse(Call<Author> call, Response<Author> response) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    toastMessage("Registration Success");
+                    if(registrationListener!=null){
+                        registrationListener.onRegistrationSuccess(author);
+                    }
+                    dismiss();
+                }
 
-            /*Thread thread=new Thread(registerAuthor);
-            thread.start();*/
+                @Override
+                public void onFailure(Call<Author> call, Throwable t) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    toastMessage(t.getMessage());
+                }
+            });
         }
     }
-
-    Runnable registerAuthor = new Runnable() {
-        @Override
-        public void run() {
-            HttpURLConnection httpURLConnection=null;
-            try{
-                String response=null;
-                URL url = new URL(RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor);
-
-                httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setReadTimeout(2000);
-                httpURLConnection.setConnectTimeout(4000);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoInput(true);
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setRequestProperty("Content-Type","application/json");
-
-                JSONObject authorJsonObject = new JSONObject();
-                authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
-                authorJsonObject.put("authorName",author.getAuthorName());
-                authorJsonObject.put("authorPassword",author.getAuthorPassword());
-
-                DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
-                dataOutputStream.writeBytes(authorJsonObject.toString());
-                dataOutputStream.flush();
-                dataOutputStream.close();
-
-                httpURLConnection.connect();
-
-                int responseCode = httpURLConnection.getResponseCode();
-                if(responseCode == 201){
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line=bufferedReader.readLine())!=null){
-                        stringBuilder.append(line);
-                    }
-                    response = stringBuilder.toString();
-                    final Author author = ToDoJsonParsers.getAuthor(new JSONObject(response));
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toastMessage("Registration Success");
-                            registrationListener.onRegistrationSuccess(author);
-                            dismiss();
-                        }
-                    });
-
-
-                }
-                Log.i(TAG,response);
-
-            }catch (SocketTimeoutException e){
-                toastMessage("Registration failed, server down. Try later!!");
-                e.printStackTrace();
-            }catch (MalformedURLException e){
-                e.printStackTrace();
-            }catch (IOException e){
-                e.printStackTrace();
-            }catch (JSONException e){
-                e.printStackTrace();
-            }catch (Exception e){
-                e.printStackTrace();
-            } finally {
-                httpURLConnection.disconnect();
-                progressBar.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-
-        }
-    };
 
     private void toastMessage(final String message){
         getActivity().runOnUiThread(new Runnable() {
