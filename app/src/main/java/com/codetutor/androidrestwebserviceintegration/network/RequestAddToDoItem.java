@@ -58,7 +58,6 @@ public class RequestAddToDoItem extends AppNetworkRequest{
 
             @Override
             public void onResponse(Call call, final Response response){
-                ResponseBody localresponseBody = null;
                 try{
                     responseObject = new GsonBuilder().create().fromJson(response.body().string(), ToDoItem.class);
                 }catch (IOException e) {

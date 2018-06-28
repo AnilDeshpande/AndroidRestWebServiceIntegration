@@ -127,6 +127,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
             proposedToBeModified.setTodoString(editTextNewToDo.getText().toString());
             if(Util.isAppOnLine(getApplicationContext())){
+                showBusyDialog("Modifying ToDo");
                 ModifyToDoPayloadBean modifyToDoPayloadBean = new ModifyToDoPayloadBean(currentToDoItem,proposedToBeModified);
                 AppNetworkRequest appNetworkRequest = AppNetworkRequest.getRequestInstance(AppNetworkRequest.REQUEST_TYPE.REQUEST_MODIFY_TODO,this, modifyToDoPayloadBean);
                 appNetworkRequest.makeBackEndRequest();

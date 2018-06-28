@@ -23,7 +23,6 @@ public abstract class AppNetworkRequest implements Runnable{
         REQUEST_GET_TODOS,
         REQUEST_DELETE_TODO,
         REQUEST_MODIFY_TODO
-
     }
 
     public static final String CONTENT_TYPE = "Content-Type";
