@@ -157,12 +157,15 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                     .addNetworkInterceptor(loggingInterceptor)
                     .build();
 
-            Retrofit retrofit = new Retrofit.Builder().baseUrl(RestAPIs.getBaseUrl()).addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build();
-
-
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(RestAPIs.getBaseUrl())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(okHttpClient)
+                    .build();
+            
             APIInterface apiService = retrofit.create(APIInterface.class);
 
             Call<Author> regsiterAuthorCall = apiService.registerAuthor(author);
+
             regsiterAuthorCall.enqueue(new Callback<Author>(){
                 @Override
                 public void onResponse(Call<Author> call, Response<Author> response) {

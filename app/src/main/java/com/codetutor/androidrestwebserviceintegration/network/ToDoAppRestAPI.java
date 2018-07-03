@@ -8,18 +8,18 @@ import com.codetutor.androidrestwebserviceintegration.AppConfig;
 
 public interface ToDoAppRestAPI {
 
-    String baseLocalHostUrl = "http://10.0.2.2:8080/dotolist/webapi";
+    String baseLocalHostUrl = "http://10.0.2.2:8080/dotolist/webapi/";
     String baseRemoteUrl = "http://todolistmobileapp-env.ap-south-1.elasticbeanstalk.com/webapi/";
 
 
 
     String registerAuthor="authors/";
 
-    String login = registerAuthor+"/login";
+    String login = registerAuthor+"login/";
 
-    String logout = registerAuthor+"/signout";
+    String logout = registerAuthor+"signout/";
 
-    String addToDoItem = "/todolists";
+    String addToDoItem = "todolists/";
 
     String getToDoItem = addToDoItem+"/";
 
