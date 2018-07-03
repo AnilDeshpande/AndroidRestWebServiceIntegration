@@ -3,7 +3,11 @@ package com.codetutor.androidrestwebserviceintegration;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.codetutor.androidrestwebserviceintegration.network.APIServiceProvider;
+import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by anildeshpande on 5/2/18.
@@ -17,6 +21,8 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
+    private static APIServiceProvider apiServiceProvider;
+
     public static enum API_ENDPOINTS{
         localhost, remote
     }
@@ -29,6 +35,7 @@ public class AppConfig extends Application {
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
+        apiServiceProvider = APIServiceProvider.getApiServiceProvider(RestAPIs.getBaseUrl(),5000,5000, HttpLoggingInterceptor.Level.BODY);
 
     }
 
@@ -68,5 +75,10 @@ public class AppConfig extends Application {
     public static boolean getSeverEndPointPreference(){
         return sharedPreferences.getBoolean("endpoint", true);
     }
+
+    public static APIServiceProvider getApiServiceProvider(){
+        return apiServiceProvider;
+    }
+
 
 }
