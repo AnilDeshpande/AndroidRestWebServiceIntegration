@@ -66,6 +66,8 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
     ProgressBar progressBar;
     Author author;
 
+
+
     private RegistrationListener registrationListener;
 
     public interface RegistrationListener{
@@ -145,45 +147,42 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         String password = editTextPassword.getText().toString();
         author= new Author(0,userName.toString(),emailId,password);
 
-        if(Util.isAppOnLine(contextReference.get())){
-            progressBar.setVisibility(View.VISIBLE);
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(5000,TimeUnit.MILLISECONDS)
+                .connectTimeout(5000,TimeUnit.MILLISECONDS)
+                .addInterceptor(loggingInterceptor)
+                .build();
 
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .readTimeout(5000, TimeUnit.MILLISECONDS)
-                    .connectTimeout(5000, TimeUnit.MILLISECONDS)
-                    .addNetworkInterceptor(loggingInterceptor)
-                    .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(RestAPIs.getBaseUrl())                                                        // Set base Url
+                .addConverterFactory(GsonConverterFactory.create())                                    // Set Converter
+                .client(okHttpClient)                                                                  // Set okHttpClient
+                .build();
 
-            Retrofit retrofit = new Retrofit.Builder().baseUrl(RestAPIs.getBaseUrl())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(okHttpClient)
-                    .build();
-            
-            APIInterface apiService = retrofit.create(APIInterface.class);
+        APIInterface   apiInterface = retrofit.create(APIInterface.class);
 
-            Call<Author> regsiterAuthorCall = apiService.registerAuthor(author);
+        Call<Author> registerAuthorCall = apiInterface.registerAuthor(author);
 
-            regsiterAuthorCall.enqueue(new Callback<Author>(){
-                @Override
-                public void onResponse(Call<Author> call, Response<Author> response) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage("Registration Success");
-                    if(registrationListener!=null){
-                        registrationListener.onRegistrationSuccess(author);
-                    }
-                    dismiss();
+        registerAuthorCall.enqueue(new Callback<Author>() {
+            @Override
+            public void onResponse(Call<Author> call, Response<Author> response) {
+                progressBar.setVisibility(View.INVISIBLE);
+                toastMessage("Registration Success");
+                if(registrationListener!=null){
+                    registrationListener.onRegistrationSuccess(response.body());
                 }
+                dismiss();
+            }
 
-                @Override
-                public void onFailure(Call<Author> call, Throwable t) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage(t.getMessage());
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<Author> call, Throwable t) {
+                progressBar.setVisibility(View.INVISIBLE);
+                toastMessage(t.getMessage());
+            }
+        });
     }
 
     private void toastMessage(final String message){
