@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -34,10 +35,10 @@ public interface APIInterface {
     @GET(ToDoAppRestAPI.getToDoItem+"{authorEmailId}/")
     Call<List<ToDoItem>> getToDoList(@Path(value = "authorEmailId") String authorEmailId, @Header(value = "token") String token);
 
-    @DELETE(ToDoAppRestAPI.deleteToDo)
+    @HTTP(method = "DELETE", path = ToDoAppRestAPI.deleteToDo, hasBody = true)
     Call<ResponseBody> deleteToDo(@Header(value = "token") String token, @Body ToDoItem toDoItem);
 
     @PUT(ToDoAppRestAPI.modifyToDoUrl)
-    Call<ResponseBody> modifyToDoItem(@Header(value = "token") String token, @Body ModifyToDoPayloadBean modifyToDoPayloadBean);
+    Call<ToDoItem> modifyToDoItem(@Header(value = "token") String token, @Body ModifyToDoPayloadBean modifyToDoPayloadBean);
 
 }

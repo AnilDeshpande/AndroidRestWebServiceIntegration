@@ -13,9 +13,10 @@ import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,7 +27,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
     private TextView textViewToDos;
     private Button buttonAddToDo, buttonRemoveToDo, buttonModifyToDo;
 
-    List<ToDoItem> toDoItems;
+    List<ToDoItem> toDoItems = new ArrayList<ToDoItem>();
 
     ToDoItem itemToBeRemoved;
 
@@ -72,82 +73,126 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         }
     }
 
-    private void setNewList(List<ToDoItem> toDoItems){
-        StringBuilder stringBuilder = new StringBuilder();
-        for(ToDoItem item: toDoItems){
-            stringBuilder.append(item.toString()+"\n");
-        }
-        textViewToDos.setText(stringBuilder.toString());
-    }
-
     private void addNewToDo(){
         String stringToDoString = editTextNewToDoString.getText().toString();
         String stringPlace = editTextPlace.getText().toString();
 
-        ToDoItem item = new ToDoItem(0,stringToDoString, AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId(),stringPlace);
-        if(Util.isAppOnLine(getApplicationContext())){
-            showBusyDialog("Adding ToDo");
-            AppConfig.getApiServiceProvider().addToDoItem(item).enqueue(new Callback<ToDoItem>() {
-                @Override
-                public void onResponse(Call<ToDoItem> call, Response<ToDoItem> response) {
-                    dismissBusyDialog();
-                    toDoItems.add(response.body());
-                    setNewList(toDoItems);
-                }
-
-                @Override
-                public void onFailure(Call<ToDoItem> call, Throwable t) {
-                    dismissBusyDialog();
-                    toastMessage(t.getMessage(),Toast.LENGTH_SHORT);
-                }
-            });
-
-        }else{
-            toastMessage("Network Issue",Toast.LENGTH_SHORT);
-        }
-
-    }
-
-    private void removeToDo(){
-        long removiewId = Long.parseLong(editTextToDoId.getText().toString());
-        itemToBeRemoved = getToDoItemById(removiewId);
-        if(itemToBeRemoved!=null){
+        if(!Util.isEmptyString(stringToDoString) && !Util.isEmptyString(stringPlace)){
+            ToDoItem item = new ToDoItem(0,stringToDoString, AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId(),stringPlace);
             if(Util.isAppOnLine(getApplicationContext())){
-                showBusyDialog("Deleting ToDo");
+                showBusyDialog("Adding ToDo");
+                AppConfig.getApiServiceProvider().addToDoItem(item).enqueue(new Callback<ToDoItem>() {
+                    @Override
+                    public void onResponse(Call<ToDoItem> call, Response<ToDoItem> response) {
+                        dismissBusyDialog();
 
+                        toDoItems.add(response.body());
+                        refreshList();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ToDoItem> call, Throwable t) {
+                        dismissBusyDialog();
+                        toastMessage(t.getMessage(),Toast.LENGTH_SHORT);
+                    }
+                });
 
             }else{
                 toastMessage("Network Issue",Toast.LENGTH_SHORT);
             }
-        }else{
-            toastMessage("Please select existing id", Toast.LENGTH_LONG);
+        }else {
+            toastMessage("Relevant field is empty",Toast.LENGTH_SHORT);
         }
 
+
+
+
+    }
+
+    private void refreshList(){
+
+        textViewToDos.setText(toDoItems.size()==0?"":toDoItems.toString());
+    }
+
+    private void removeToDo(){
+
+        if(!Util.isEmptyString(editTextToDoId.getText().toString())){
+            long removiewId = Long.parseLong(editTextToDoId.getText().toString());
+            itemToBeRemoved = getToDoItemById(removiewId);
+            if(itemToBeRemoved!=null){
+                if(Util.isAppOnLine(getApplicationContext())){
+                    showBusyDialog("Deleting ToDo");
+                    AppConfig.getApiServiceProvider().deleteToDo(getToDoItemById(removiewId)).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            dismissBusyDialog();
+                            toDoItems.remove(itemToBeRemoved);
+                            clearEditTexsts();
+                            refreshList();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            dismissBusyDialog();
+                            toastMessage(t.getMessage(),Toast.LENGTH_SHORT);
+                        }
+                    });
+
+
+                }else{
+                    toastMessage("Network Issue",Toast.LENGTH_SHORT);
+                }
+            }else{
+                toastMessage("Please select existing id", Toast.LENGTH_LONG);
+            }
+        }else {
+            toastMessage("Relevant field is empty",Toast.LENGTH_SHORT);
+        }
 
 
     }
 
     private void modifyToDo(){
-        int id=Integer.parseInt(editTextToDoId.getText().toString());
-        String newToDOString=editTextNewToDo.getText().toString();
 
-        ToDoItem currentToDoItem = getToDoItemById(id);
+        if(!Util.isEmptyString(editTextToDoId.getText().toString()) && !Util.isEmptyString(editTextNewToDo.getText().toString())){
+            int id=Integer.parseInt(editTextToDoId.getText().toString());
+            String newToDOString=editTextNewToDo.getText().toString();
 
-        if(currentToDoItem!=null){
-            ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
-            proposedToBeModified.setTodoString(editTextNewToDo.getText().toString());
-            if(Util.isAppOnLine(getApplicationContext())){
-                showBusyDialog("Modifying ToDo");
-                ModifyToDoPayloadBean modifyToDoPayloadBean = new ModifyToDoPayloadBean(currentToDoItem,proposedToBeModified);
+            final ToDoItem currentToDoItem = getToDoItemById(id);
 
+            if(currentToDoItem!=null){
+                final ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
+                proposedToBeModified.setTodoString(editTextNewToDo.getText().toString());
+                if(Util.isAppOnLine(getApplicationContext())){
+                    showBusyDialog("Modifying ToDo");
+                    ModifyToDoPayloadBean modifyToDoPayloadBean = new ModifyToDoPayloadBean(currentToDoItem,proposedToBeModified);
+                    AppConfig.getApiServiceProvider().modifyToDoItem(modifyToDoPayloadBean).enqueue(new Callback<ToDoItem>() {
+                        @Override
+                        public void onResponse(Call<ToDoItem> call, Response<ToDoItem> response) {
+                            dismissBusyDialog();
+                            toDoItems.remove(currentToDoItem);
+                            toDoItems.add(proposedToBeModified);
+                            clearEditTexsts();
+                            refreshList();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ToDoItem> call, Throwable t) {
+                            dismissBusyDialog();
+                            toastMessage(t.getMessage(),Toast.LENGTH_SHORT);
+                        }
+                    });
+
+                }else{
+                    toastMessage("Network Issue",Toast.LENGTH_SHORT);
+
+                }
             }else{
-                toastMessage("Network Issue",Toast.LENGTH_SHORT);
-
+                toastMessage("Please select existing id", Toast.LENGTH_LONG);
             }
-        }else{
-            toastMessage("Please select existing id", Toast.LENGTH_LONG);
+        }else {
+            toastMessage("Relevant field is empty",Toast.LENGTH_SHORT);
         }
-
     }
 
     private void getToDoItems(){
@@ -158,7 +203,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
                 public void onResponse(Call<List<ToDoItem>> call, Response<List<ToDoItem>> response) {
                     dismissBusyDialog();
                     if(response.body().size()>0){
-                        setNewList(response.body());
+                        toDoItems = response.body();
+                        refreshList();
+                        clearEditTexsts();
                     }else {
                         toastMessage("No todo items",Toast.LENGTH_SHORT);
                         textViewToDos.setText("");
@@ -189,19 +236,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         return item;
     }
 
-    private void updateToDoItem(ToDoItem proposedItem){
-        ToDoItem item = getToDoItemById(proposedItem.getId());
-        if(item!=null){
-            toDoItems.remove(item);
-            toDoItems.add(proposedItem);
-            setNewList(toDoItems);
-        }
-    }
-
     private void clearEditTexsts(){
-        editTextNewToDo.clearComposingText();
-        editTextNewToDoString.clearComposingText();
-        editTextPlace.clearComposingText();
-        editTextToDoId.clearComposingText();
+        editTextNewToDo.setText("");
+        editTextNewToDoString.setText("");
+        editTextToDoId.setText("");
+        editTextPlace.setText("");
+        editTextToDoId.setText("");
     }
 }

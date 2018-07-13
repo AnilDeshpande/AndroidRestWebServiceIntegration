@@ -32,4 +32,12 @@ public class Util {
                 || "google_sdk".equals(Build.PRODUCT);
     }
 
+    public static boolean isEmptyString(String string){
+        if(string!=null && string.length()==0){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }

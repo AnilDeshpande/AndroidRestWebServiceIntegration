@@ -74,7 +74,7 @@ public class APIServiceProvider {
         return apiInterface.deleteToDo(AppConfig.getSessionTokenValue(),toDoItem);
     }
 
-    public Call<ResponseBody> modifyToDoItem(ModifyToDoPayloadBean modifyToDoPayloadBean){
+    public Call<ToDoItem> modifyToDoItem(ModifyToDoPayloadBean modifyToDoPayloadBean){
         return apiInterface.modifyToDoItem(AppConfig.getSessionTokenValue(),modifyToDoPayloadBean);
     }
 

@@ -85,13 +85,11 @@ public class ToDoItem implements Serializable {
 
     @Override
     public int hashCode() {
-        // TODO Auto-generated method stub
         return (id+""+authorEmailId+todoString+place).hashCode();
     }
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return "("+this.id+", "+this.todoString+", "+this.date+", "+this.place+", "+this.authorEmailId+")";
+        return "("+this.id+", "+this.todoString+", "+this.place+")";
     }
 }
