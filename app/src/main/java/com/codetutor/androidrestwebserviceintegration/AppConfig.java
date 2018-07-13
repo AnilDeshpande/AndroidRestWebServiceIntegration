@@ -1,11 +1,14 @@
 package com.codetutor.androidrestwebserviceintegration;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.codetutor.androidrestwebserviceintegration.network.APIServiceProvider;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.GsonBuilder;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -21,6 +24,8 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
+    static Context context;
+
     private static APIServiceProvider apiServiceProvider;
 
     public static enum API_ENDPOINTS{
@@ -35,13 +40,37 @@ public class AppConfig extends Application {
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
-        apiServiceProvider = APIServiceProvider.getApiServiceProvider(RestAPIs.getBaseUrl(),5000,5000, HttpLoggingInterceptor.Level.BODY);
+        context = getApplicationContext();
+        apiServiceProvider = APIServiceProvider.getApiServiceProvider(
+                RestAPIs.getBaseUrl(),
+                5000,
+                5000,
+                HttpLoggingInterceptor.Level.BODY);
 
     }
 
     public static void saveUserName(String username){
         editor.putString("username",username);
         editor.commit();
+    }
+
+    public static void saveSuccessfulLoginUser(String jsonString){
+        editor.putString("user",jsonString);
+        editor.commit();
+    }
+
+    public static Author getSavedSuccessfulAuthor(){
+        Author author = new GsonBuilder().create().fromJson(sharedPreferences.getString("user",null), Author.class);
+        return author;
+    }
+
+    public static void saveSessionTokenValue(String token){
+        editor.putString("token",token);
+        editor.commit();
+    }
+
+    public static String getSessionTokenValue(){
+        return sharedPreferences.getString("token",null);
     }
 
     public static  String getSavedUserName(){
@@ -76,9 +105,12 @@ public class AppConfig extends Application {
         return sharedPreferences.getBoolean("endpoint", true);
     }
 
+    public static Context getContext(){
+        return context;
+    }
+
     public static APIServiceProvider getApiServiceProvider(){
         return apiServiceProvider;
     }
-
 
 }

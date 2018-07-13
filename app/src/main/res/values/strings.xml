@@ -6,4 +6,5 @@
     <string name="string_password">Password</string>
     <string name="string_register">Register</string>
     <string name="string_cancel">Cancel</string>
+    <string name="regisrtation_successful">Registration Successful</string>
 </resources>

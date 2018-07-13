@@ -1,10 +1,16 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
+import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
+import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -47,4 +53,30 @@ public class APIServiceProvider {
     public Call<Author> getRegisterAuthorApi(Author author){
         return apiInterface.registerAuthor(author);
     }
+
+    public Call<LoginToken> loginAuthor(Author author){
+        return apiInterface.loginAuthor(author);
+    }
+
+    public Call<ResponseBody> logoutAuthor(Author author){
+        return apiInterface.logoutAuthor(author);
+    }
+
+    public Call<ToDoItem> addToDoItem(ToDoItem toDoItem){
+        return apiInterface.addToDoItem(AppConfig.getSessionTokenValue(),toDoItem);
+    }
+
+    public Call<List<ToDoItem>> getToDoList(){
+        return apiInterface.getToDoList(AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId(),AppConfig.getSessionTokenValue());
+    }
+
+    public Call<ResponseBody> deleteToDo(ToDoItem toDoItem){
+        return apiInterface.deleteToDo(AppConfig.getSessionTokenValue(),toDoItem);
+    }
+
+    public Call<ResponseBody> modifyToDoItem(ModifyToDoPayloadBean modifyToDoPayloadBean){
+        return apiInterface.modifyToDoItem(AppConfig.getSessionTokenValue(),modifyToDoPayloadBean);
+    }
+
+
 }
