@@ -157,9 +157,9 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(RestAPIs.getBaseUrl())                                                        // Set base Url
-                .addConverterFactory(GsonConverterFactory.create())                                    // Set Converter
-                .client(okHttpClient)                                                                  // Set okHttpClient
+                .baseUrl(RestAPIs.getBaseUrl())                     // Set base Url
+                .addConverterFactory(GsonConverterFactory.create()) // Set Converter
+                .client(okHttpClient)                               // Set okHttpClient
                 .build();
 
         APIInterface   apiInterface = retrofit.create(APIInterface.class);
