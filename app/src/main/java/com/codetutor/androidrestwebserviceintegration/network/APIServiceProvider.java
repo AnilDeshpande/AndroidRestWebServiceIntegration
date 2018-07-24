@@ -25,7 +25,11 @@ public class APIServiceProvider {
     private HttpLoggingInterceptor loggingInterceptor;
     APIInterface apiInterface;
 
-    private APIServiceProvider(String baseUrl, long readTimeout, long connectTimeout, HttpLoggingInterceptor.Level logLevel){
+    private APIServiceProvider(String baseUrl,
+                               long readTimeout,
+                               long connectTimeout,
+                               HttpLoggingInterceptor.Level logLevel){
+
         loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(logLevel);
 
@@ -43,7 +47,10 @@ public class APIServiceProvider {
         apiInterface = retrofit.create(APIInterface.class);
     }
 
-    public static APIServiceProvider getApiServiceProvider(String baseUrl, long readTimeout, long connectTimeout, HttpLoggingInterceptor.Level logLevel){
+    public static APIServiceProvider getApiServiceProvider(String baseUrl,
+                                                           long readTimeout,
+                                                           long connectTimeout,
+                                                           HttpLoggingInterceptor.Level logLevel){
         if(apiServiceProvider==null){
             apiServiceProvider=new APIServiceProvider(baseUrl,readTimeout,connectTimeout,logLevel);
         }
@@ -78,5 +85,7 @@ public class APIServiceProvider {
         return apiInterface.modifyToDoItem(AppConfig.getSessionTokenValue(),modifyToDoPayloadBean);
     }
 
-
 }
+
+
+
