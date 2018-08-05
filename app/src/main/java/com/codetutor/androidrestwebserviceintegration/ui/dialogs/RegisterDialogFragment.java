@@ -15,6 +15,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.Volley;
+import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
@@ -31,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -111,6 +120,12 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
+        if(BuildConfig.DEBUG){
+            editTextUserName.setText("AnilDeshpande");
+            editTextEmailId.setText("AnilDeshpande@samplemail.com");
+            editTextPassword.setText("AnilDeshpande");
+        }
+
     }
 
     @Override
@@ -129,86 +144,43 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
-            Thread thread=new Thread(registerAuthor);
-            thread.start();
-        }
-    }
 
-    Runnable registerAuthor = new Runnable() {
-        @Override
-        public void run() {
-            HttpURLConnection httpURLConnection=null;
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+            JSONObject authorJsonObject = new JSONObject();
+
             try{
-                String response=null;
-                URL url = new URL(RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor);
-
-                httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setReadTimeout(2000);
-                httpURLConnection.setConnectTimeout(4000);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoInput(true);
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setRequestProperty("Content-Type","application/json");
-
-                JSONObject authorJsonObject = new JSONObject();
                 authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
                 authorJsonObject.put("authorName",author.getAuthorName());
                 authorJsonObject.put("authorPassword",author.getAuthorPassword());
-
-                DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
-                dataOutputStream.writeBytes(authorJsonObject.toString());
-                dataOutputStream.flush();
-                dataOutputStream.close();
-
-                httpURLConnection.connect();
-
-                int responseCode = httpURLConnection.getResponseCode();
-                if(responseCode == 201){
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line=bufferedReader.readLine())!=null){
-                        stringBuilder.append(line);
-                    }
-                    response = stringBuilder.toString();
-                    final Author author = ToDoJsonParsers.getAuthor(new JSONObject(response));
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toastMessage("Registration Success");
-                            registrationListener.onRegistrationSuccess(author);
-                            dismiss();
-                        }
-                    });
-
-
-                }
-                Log.i(TAG,response);
-
-            }catch (SocketTimeoutException e){
-                toastMessage("Registration failed, server down. Try later!!");
-                e.printStackTrace();
-            }catch (MalformedURLException e){
-                e.printStackTrace();
-            }catch (IOException e){
-                e.printStackTrace();
             }catch (JSONException e){
                 e.printStackTrace();
-            }catch (Exception e){
-                e.printStackTrace();
-            } finally {
-                httpURLConnection.disconnect();
-                progressBar.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
             }
 
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                    toastMessage("Registration Success");
+                    if(registrationListener!=null){
+                        registrationListener.onRegistrationSuccess(author);
+                    }
+                    dismiss();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    toastMessage(error.getMessage());
+                }
+            });
+
+            requestQueue.add(jsonObjectRequest);
+
         }
-    };
+    }
 
     private void toastMessage(final String message){
         getActivity().runOnUiThread(new Runnable() {
