@@ -176,9 +176,7 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                     toastMessage(error.getMessage());
                 }
             });
-
             requestQueue.add(jsonObjectRequest);
-
         }
     }
 

@@ -1,9 +1,11 @@
 package com.codetutor.androidrestwebserviceintegration;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+
 
 /**
  * Created by anildeshpande on 5/2/18.
@@ -17,6 +19,10 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
+    static Context context;
+
+
+
     public static enum API_ENDPOINTS{
         localhost, remote
     }
@@ -29,12 +35,32 @@ public class AppConfig extends Application {
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
+        context = getApplicationContext();
 
     }
 
     public static void saveUserName(String username){
         editor.putString("username",username);
         editor.commit();
+    }
+
+    public static void saveSuccessfulLoginUser(String jsonString){
+        editor.putString("user",jsonString);
+        editor.commit();
+    }
+
+    public static Author getSavedSuccessfulAuthor(){
+        Author author = new GsonBuilder().create().fromJson(sharedPreferences.getString("user",null), Author.class);
+        return author;
+    }
+
+    public static void saveSessionTokenValue(String token){
+        editor.putString("token",token);
+        editor.commit();
+    }
+
+    public static String getSessionTokenValue(){
+        return sharedPreferences.getString("token",null);
     }
 
     public static  String getSavedUserName(){
@@ -67,6 +93,10 @@ public class AppConfig extends Application {
 
     public static boolean getSeverEndPointPreference(){
         return sharedPreferences.getBoolean("endpoint", true);
+    }
+
+    public static Context getContext(){
+        return context;
     }
 
 }
