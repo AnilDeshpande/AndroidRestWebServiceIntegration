@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.network.WebServiceProvider;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.GsonBuilder;
 
 
 /**
@@ -19,7 +21,9 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
-    static Context context;
+    private static Context context;
+
+    private static WebServiceProvider webServiceProvider;
 
 
 
@@ -36,6 +40,8 @@ public class AppConfig extends Application {
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
         context = getApplicationContext();
+
+        webServiceProvider = WebServiceProvider.getInstance(context);
 
     }
 
@@ -98,5 +104,11 @@ public class AppConfig extends Application {
     public static Context getContext(){
         return context;
     }
+
+    public static WebServiceProvider getWebServiceProvider(){
+        return webServiceProvider;
+    }
+
+
 
 }

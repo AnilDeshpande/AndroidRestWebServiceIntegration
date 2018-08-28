@@ -22,13 +22,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,11 +43,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by anildeshpande on 2/21/18.
@@ -148,35 +153,33 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
             RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
             String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
-            JSONObject authorJsonObject = new JSONObject();
 
-            try{
-                authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
-                authorJsonObject.put("authorName",author.getAuthorName());
-                authorJsonObject.put("authorPassword",author.getAuthorPassword());
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
+            Map<String, String> headers =new HashMap<String, String>();
+            headers.put("Content-Type","application/json");
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
+            String jsonString = new GsonBuilder().create().toJson(author);
 
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage("Registration Success");
-                    if(registrationListener!=null){
-                        registrationListener.onRegistrationSuccess(author);
+            GsonRequest<Author> registerRequest = new GsonRequest<Author>(Request.Method.POST,url,jsonString,Author.class, headers,
+                new Response.Listener<Author>() {
+                    @Override
+                    public void onResponse(Author response) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        toastMessage("Registration Success");
+                        if(registrationListener!=null){
+                            registrationListener.onRegistrationSuccess(author);
+                        }
+                        dismiss();
                     }
-                    dismiss();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage(error.getMessage());
-                }
-            });
-            requestQueue.add(jsonObjectRequest);
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        toastMessage(error.getMessage());
+                    }
+                });
+
+            AppConfig.getWebServiceProvider().addToRequestQueue(registerRequest);
         }
     }
 
