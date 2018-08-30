@@ -1,42 +1,47 @@
 package com.codetutor.androidrestwebserviceintegration.ui.activities;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
+import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
+import com.google.gson.GsonBuilder;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener{
+public class MainActivity extends BaseActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener{
 
     private  static String TAG = MainActivity.class.getSimpleName();
 
     TextView textViewRegister;
     Switch switchEndPoint;
     EditText editTextUserName, editTextPassword;
+
+    Button buttoLogin;
 
 
     @Override
@@ -46,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         editTextUserName = (EditText)findViewById(R.id.editTextUserName);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+
+        buttoLogin = (Button)findViewById(R.id.buttonLogin);
+        buttoLogin.setOnClickListener(this);
 
         if(AppConfig.getSavedUserName()!=null){
             editTextUserName.setText(AppConfig.getSavedUserName());
@@ -82,6 +90,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.textViewRegister: showRegisterDialog(); break;
+            case R.id.buttonLogin: login(); break;
+
+        }
+    }
+
+    private void login(){
+
+        String password = editTextPassword.getText().toString();
+        Author author = AppConfig.getSavedSuccessfulAuthor();
+        author.setAuthorPassword(password);
+
+        if(Util.isAppOnLine(MainActivity.this)){
+            showBusyDialog("Logging In");
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login;
+
+            Map<String, String> headers =new HashMap<String, String>();
+            headers.put("Content-Type","application/json");
+
+            String jsonString = new GsonBuilder().create().toJson(author);
+
+
+            GsonRequest<LoginToken> loginRequest = new GsonRequest<LoginToken>(Request.Method.POST,url,jsonString, LoginToken.class, headers,
+                new Response.Listener<LoginToken>() {
+                    @Override
+                    public void onResponse(LoginToken response) {
+                        dismissBusyDialog();
+                        AppConfig.saveSessionTokenValue(response.getToken());
+                        startLoginActivity();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dismissBusyDialog();
+                        toastMessage(error.getMessage(), Toast.LENGTH_SHORT);
+                    }
+                });
+
+            AppConfig.getWebServiceProvider().addToRequestQueue(loginRequest);
         }
     }
 
@@ -94,6 +142,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRegistrationSuccess(Author author) {
         AppConfig.saveUserName(author.getAuthorName());
+        AppConfig.saveSuccessfulLoginUser(new GsonBuilder().create().toJson(author).toString());
         editTextUserName.setText(AppConfig.getSavedUserName());
+    }
+
+    private void startLoginActivity(){
+        Intent loginIntent = new Intent(this,HomeActivity.class);
+        startActivity(loginIntent);
     }
 }

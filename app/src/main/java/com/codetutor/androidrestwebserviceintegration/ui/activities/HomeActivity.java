@@ -7,15 +7,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
+import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
+import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Error;
+import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
 import com.codetutor.androidrestwebserviceintegration.restbean.Success;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
+import com.codetutor.androidrestwebserviceintegration.restbean.ToDoListResponse;
+import com.google.gson.GsonBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends BaseActivity implements View.OnClickListener{
 
@@ -137,10 +150,45 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
     private void getToDoItems(){
         if(Util.isAppOnLine(getApplicationContext())){
             showBusyDialog("Fetching ToDos");
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            String url = RestAPIs.getBaseUrl()+ ToDoAppRestAPI.getToDoItem;
 
-        }else{
+            Map<String, String> headers =new HashMap<String, String>();
+            headers.put("Content-Type","application/json");
+            headers.put("token",AppConfig.getSessionTokenValue());
+
+
+            GsonRequest<ToDoListResponse> getToDoListRequest = new GsonRequest<ToDoListResponse>(Request.Method.GET,url,null, ToDoListResponse.class, headers,
+                    new Response.Listener<ToDoListResponse>() {
+                        @Override
+                        public void onResponse(ToDoListResponse response) {
+                            dismissBusyDialog();
+                            if(response.size()>0){
+                                toDoItems = response;
+                                refreshList();
+                                clearEditTexsts();
+                            }else {
+                                toastMessage("No todo items",Toast.LENGTH_SHORT);
+                                textViewToDos.setText("");
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            dismissBusyDialog();
+                            toastMessage(error.getMessage(), Toast.LENGTH_SHORT);
+                        }
+                    });
+            AppConfig.getWebServiceProvider().addToRequestQueue(getToDoListRequest);
+        } else {
             toastMessage("Network Issue",Toast.LENGTH_SHORT);
         }
+    }
+
+    private void refreshList(){
+
+        textViewToDos.setText(toDoItems.size()==0?"":toDoItems.toString());
     }
 
     private ToDoItem getToDoItemById(long id){
