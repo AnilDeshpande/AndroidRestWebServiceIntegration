@@ -103,13 +103,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         if(Util.isAppOnLine(MainActivity.this)){
             showBusyDialog("Logging In");
-
-            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login;
-            Map<String, String> headers =new HashMap<String, String>();
-            headers.put("Content-Type","application/json");
-
             String jsonString = new GsonBuilder().create().toJson(author);
-            GsonRequest<LoginToken> loginRequest = new GsonRequest<LoginToken>(Request.Method.POST,url,jsonString, LoginToken.class, headers,
+            GsonRequest<LoginToken> loginRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.LOGIN,jsonString, LoginToken.class,
                 new Response.Listener<LoginToken>() {
                     @Override
                     public void onResponse(LoginToken response) {

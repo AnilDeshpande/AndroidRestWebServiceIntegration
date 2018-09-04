@@ -46,7 +46,7 @@ public class GsonRequest<T> extends JsonRequest<T> {
         return headers != null ? headers : super.getHeaders();
     }
 
-    public GsonRequest<T> getGsonRequest(REQ_TYPE requestType,String requestBody, Class<T> clazz, Listener<T> listener, Response.ErrorListener errorListener){
+    public static <T> GsonRequest<T> getGsonRequest(REQ_TYPE requestType,String requestBody, Class<T> clazz, Listener<T> listener, Response.ErrorListener errorListener){
         int httpRequestType=0;
         String url=null;
 

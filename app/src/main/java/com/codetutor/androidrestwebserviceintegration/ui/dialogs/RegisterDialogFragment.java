@@ -150,16 +150,8 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
 
-            RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-
-            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
-
-            Map<String, String> headers =new HashMap<String, String>();
-            headers.put("Content-Type","application/json");
-
             String jsonString = new GsonBuilder().create().toJson(author);
-
-            GsonRequest<Author> registerRequest = new GsonRequest<Author>(Request.Method.POST,url,jsonString,Author.class, headers,
+            GsonRequest<Author> registerRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.REGISTER,jsonString,Author.class,
                 new Response.Listener<Author>() {
                     @Override
                     public void onResponse(Author response) {

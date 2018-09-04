@@ -151,7 +151,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         if(Util.isAppOnLine(getApplicationContext())){
             showBusyDialog("Fetching ToDos");
 
-            GsonRequest<ToDoListResponse> getToDoListRequest =  GsonRequest<ToDoListResponse>(Request.Method.GET,null, ToDoListResponse.class,
+            GsonRequest<ToDoListResponse> getToDoListRequest =  GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.GET_TODOS,null, ToDoListResponse.class,
                     new Response.Listener<ToDoListResponse>() {
                         @Override
                         public void onResponse(ToDoListResponse response) {
