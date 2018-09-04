@@ -125,7 +125,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
             editTextEmailId.setText("AnilDeshpande@samplemail.com");
             editTextPassword.setText("AnilDeshpande");
         }
-
     }
 
     @Override
@@ -161,7 +160,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-
                     progressBar.setVisibility(View.INVISIBLE);
                     toastMessage("Registration Success");
                     if(registrationListener!=null){
