@@ -24,7 +24,11 @@ import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayload
 import com.codetutor.androidrestwebserviceintegration.restbean.Success;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoListResponse;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -97,8 +101,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         ToDoItem item = new ToDoItem(0,stringToDoString, AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId(),stringPlace);
         if(Util.isAppOnLine(getApplicationContext())){
             showBusyDialog("Adding ToDo");
+            GsonRequest<ToDoItem> gsonRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.ADD_TODO, new GsonBuilder().create().toJson(item), ToDoItem.class,
+                new Response.Listener<ToDoItem>() {
+                    @Override
+                    public void onResponse(ToDoItem response) {
+                        dismissBusyDialog();
+                        toDoItems.add(response);
+                        refreshList();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dismissBusyDialog();
+                        toastMessage(error.getMessage(),Toast.LENGTH_SHORT);
+                    }
+                });
 
-
+            AppConfig.getWebServiceProvider().addToRequestQueue(gsonRequest);
         }else{
             toastMessage("Network Issue",Toast.LENGTH_SHORT);
         }
@@ -111,8 +130,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         if(itemToBeRemoved!=null){
             if(Util.isAppOnLine(getApplicationContext())){
                 showBusyDialog("Deleting ToDo");
-
-
+                GsonRequest gsonRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.DELETE_TODO, new GsonBuilder().create().toJson(itemToBeRemoved), null,
+                    new Response.Listener() {
+                        @Override
+                        public void onResponse(Object response) {
+                            toDoItems.remove(itemToBeRemoved);
+                            clearEditTexsts();
+                            refreshList();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            dismissBusyDialog();
+                            toastMessage(error.getMessage(),Toast.LENGTH_SHORT);
+                        }
+                    });
+                AppConfig.getWebServiceProvider().addToRequestQueue(gsonRequest);
             }else{
                 toastMessage("Network Issue",Toast.LENGTH_SHORT);
             }
@@ -128,14 +161,33 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
         int id=Integer.parseInt(editTextToDoId.getText().toString());
         String newToDOString=editTextNewToDo.getText().toString();
 
-        ToDoItem currentToDoItem = getToDoItemById(id);
+        final ToDoItem currentToDoItem = getToDoItemById(id);
 
         if(currentToDoItem!=null){
-            ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
+            final ToDoItem proposedToBeModified = new ToDoItem(currentToDoItem.getId(),currentToDoItem.getTodoString(), currentToDoItem.getAuthorEmailId(),currentToDoItem.getPlace());
             proposedToBeModified.setTodoString(editTextNewToDo.getText().toString());
             if(Util.isAppOnLine(getApplicationContext())){
                 showBusyDialog("Modifying ToDo");
                 ModifyToDoPayloadBean modifyToDoPayloadBean = new ModifyToDoPayloadBean(currentToDoItem,proposedToBeModified);
+                GsonRequest<ToDoItem> gsonRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.MODIFY_TODOS, new GsonBuilder().create().toJson(modifyToDoPayloadBean), ToDoItem.class,
+                    new Response.Listener<ToDoItem>() {
+                        @Override
+                        public void onResponse(ToDoItem response) {
+                            dismissBusyDialog();
+                            toDoItems.remove(currentToDoItem);
+                            toDoItems.add(proposedToBeModified);
+                            clearEditTexsts();
+                            refreshList();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            dismissBusyDialog();
+                            toastMessage(error.getMessage(),Toast.LENGTH_SHORT);
+                        }
+                    });
+
+                AppConfig.getWebServiceProvider().addToRequestQueue(gsonRequest);
 
             }else{
                 toastMessage("Network Issue",Toast.LENGTH_SHORT);
@@ -152,27 +204,27 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
             showBusyDialog("Fetching ToDos");
 
             GsonRequest<ToDoListResponse> getToDoListRequest =  GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.GET_TODOS,null, ToDoListResponse.class,
-                    new Response.Listener<ToDoListResponse>() {
-                        @Override
-                        public void onResponse(ToDoListResponse response) {
-                            dismissBusyDialog();
-                            if(response.size()>0){
-                                toDoItems = response;
-                                refreshList();
-                                clearEditTexsts();
-                            }else {
-                                toastMessage("No todo items",Toast.LENGTH_SHORT);
-                                textViewToDos.setText("");
-                            }
+                new Response.Listener<ToDoListResponse>() {
+                    @Override
+                    public void onResponse(ToDoListResponse response) {
+                        dismissBusyDialog();
+                        if(response.size()>0){
+                            toDoItems = response;
+                            refreshList();
+                            clearEditTexsts();
+                        }else {
+                            toastMessage("No todo items",Toast.LENGTH_SHORT);
+                            textViewToDos.setText("");
                         }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            dismissBusyDialog();
-                            toastMessage(error.getMessage(), Toast.LENGTH_SHORT);
-                        }
-                    });
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dismissBusyDialog();
+                        toastMessage(error.getMessage(), Toast.LENGTH_SHORT);
+                    }
+                });
             AppConfig.getWebServiceProvider().addToRequestQueue(getToDoListRequest);
         } else {
             toastMessage("Network Issue",Toast.LENGTH_SHORT);
