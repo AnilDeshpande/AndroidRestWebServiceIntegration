@@ -18,11 +18,11 @@ public class WebServiceProvider {
     public static WebServiceProvider instance;
 
     private WebServiceProvider(Context context){
-        //requestQueue = Volley.newRequestQueue(context);
+        requestQueue = Volley.newRequestQueue(context);
 
-        Cache cache = new DiskBasedCache(context.getCacheDir(),1024*1024);
+        /*Cache cache = new DiskBasedCache(context.getCacheDir(),1024*1024);
         Network network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache,network);
+        requestQueue = new RequestQueue(cache,network);*/
         requestQueue.start();
     }
 

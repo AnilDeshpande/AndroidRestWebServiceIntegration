@@ -150,15 +150,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
     private void getToDoItems(){
         if(Util.isAppOnLine(getApplicationContext())){
             showBusyDialog("Fetching ToDos");
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
-            String url = RestAPIs.getBaseUrl()+ ToDoAppRestAPI.getToDoItem;
 
-            Map<String, String> headers =new HashMap<String, String>();
-            headers.put("Content-Type","application/json");
-            headers.put("token",AppConfig.getSessionTokenValue());
-
-
-            GsonRequest<ToDoListResponse> getToDoListRequest = new GsonRequest<ToDoListResponse>(Request.Method.GET,url,null, ToDoListResponse.class, headers,
+            GsonRequest<ToDoListResponse> getToDoListRequest =  GsonRequest<ToDoListResponse>(Request.Method.GET,null, ToDoListResponse.class,
                     new Response.Listener<ToDoListResponse>() {
                         @Override
                         public void onResponse(ToDoListResponse response) {

@@ -103,15 +103,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         if(Util.isAppOnLine(MainActivity.this)){
             showBusyDialog("Logging In");
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
-            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login;
 
+            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login;
             Map<String, String> headers =new HashMap<String, String>();
             headers.put("Content-Type","application/json");
 
             String jsonString = new GsonBuilder().create().toJson(author);
-
-
             GsonRequest<LoginToken> loginRequest = new GsonRequest<LoginToken>(Request.Method.POST,url,jsonString, LoginToken.class, headers,
                 new Response.Listener<LoginToken>() {
                     @Override
