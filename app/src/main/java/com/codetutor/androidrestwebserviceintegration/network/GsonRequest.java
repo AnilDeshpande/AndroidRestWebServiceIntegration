@@ -63,7 +63,7 @@ public class GsonRequest<T> extends JsonRequest<T> {
                                headers.put("token",AppConfig.getSessionTokenValue());
                                break;
             case DELETE_TODO: httpRequestType = Method.DELETE;
-                              url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.deleteToDo;
+                              url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.deleteToDo+"/"+AppConfig.getToBeDeletedToDoId();
                               headers.put("token",AppConfig.getSessionTokenValue());
                               break;
             case REGISTER: httpRequestType = Method.POST;

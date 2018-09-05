@@ -127,13 +127,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
     private void removeToDo(){
         long removiewId = Long.parseLong(editTextToDoId.getText().toString());
         itemToBeRemoved = getToDoItemById(removiewId);
+        AppConfig.saveToBeDeletedToDoId(removiewId);
         if(itemToBeRemoved!=null){
             if(Util.isAppOnLine(getApplicationContext())){
                 showBusyDialog("Deleting ToDo");
-                GsonRequest gsonRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.DELETE_TODO, new GsonBuilder().create().toJson(itemToBeRemoved), null,
+                GsonRequest gsonRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.DELETE_TODO, null, String.class,
                     new Response.Listener() {
                         @Override
                         public void onResponse(Object response) {
+                            dismissBusyDialog();
                             toDoItems.remove(itemToBeRemoved);
                             clearEditTexsts();
                             refreshList();

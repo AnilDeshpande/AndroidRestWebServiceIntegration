@@ -78,6 +78,15 @@ public class AppConfig extends Application {
         editor.commit();
     }
 
+    public static void saveToBeDeletedToDoId(long id){
+        editor.putLong("tobedeleted",id);
+        editor.commit();
+    }
+
+    public static long getToBeDeletedToDoId(){
+        return sharedPreferences.getLong("tobedeleted",0);
+    }
+
     public static String getSavedPassword(){
         return sharedPreferences.getString("password",null);
     }
