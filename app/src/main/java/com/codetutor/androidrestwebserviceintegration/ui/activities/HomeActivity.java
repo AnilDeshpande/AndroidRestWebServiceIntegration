@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,6 +216,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
                             refreshList();
                             clearEditTexsts();
                         }else {
+                            toDoItems = new ArrayList<ToDoItem>();
                             toastMessage("No todo items",Toast.LENGTH_SHORT);
                             textViewToDos.setText("");
                         }

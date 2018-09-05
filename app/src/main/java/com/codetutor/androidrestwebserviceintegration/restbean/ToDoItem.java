@@ -92,6 +92,6 @@ public class ToDoItem implements Serializable {
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        return "("+this.id+", "+this.todoString+", "+this.date+", "+this.place+", "+this.authorEmailId+")";
+        return "("+this.id+", "+this.todoString+", "+this.place+")";
     }
 }
