@@ -24,6 +24,7 @@ import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
+import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 
@@ -133,7 +134,6 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
 
             RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
-            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
             JSONObject authorJsonObject = new JSONObject();
 
             try{
@@ -144,21 +144,26 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                 e.printStackTrace();
             }
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage("Registration Success");
-                    if(registrationListener!=null){
-                        registrationListener.onRegistrationSuccess(author);
+            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        toastMessage("Registration Success");
+                        if(registrationListener!=null){
+                            registrationListener.onRegistrationSuccess(ToDoJsonParsers.getAuthor(response));
+                        }
+                        dismiss();
                     }
-                    dismiss();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    toastMessage(error.getMessage());
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        dismiss();
+
                 }
             });
 
