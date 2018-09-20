@@ -3,13 +3,11 @@ package com.codetutor.androidrestwebserviceintegration.network;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonRequest;
-import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
