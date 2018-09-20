@@ -20,13 +20,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.BuildConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
+import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
 import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.ToDoJsonParsers;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,28 +135,16 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
         if(Util.isAppOnLine(contextReference.get())){
             progressBar.setVisibility(View.VISIBLE);
 
-            RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+            String jsonString = new GsonBuilder().create().toJson(author);
 
-            JSONObject authorJsonObject = new JSONObject();
-
-            try{
-                authorJsonObject.put("authorEmailId",author.getAuthorEmailId());
-                authorJsonObject.put("authorName",author.getAuthorName());
-                authorJsonObject.put("authorPassword",author.getAuthorPassword());
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            String url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, authorJsonObject,
-                new Response.Listener<JSONObject>() {
+            GsonRequest<Author> registerRequest = GsonRequest.getGsonRequest(GsonRequest.REQ_TYPE.REGISTER,jsonString,Author.class,
+                new Response.Listener<Author>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(Author response) {
                         progressBar.setVisibility(View.INVISIBLE);
                         toastMessage("Registration Success");
                         if(registrationListener!=null){
-                            registrationListener.onRegistrationSuccess(ToDoJsonParsers.getAuthor(response));
+                            registrationListener.onRegistrationSuccess(author);
                         }
                         dismiss();
                     }
@@ -162,13 +153,11 @@ public class RegisterDialogFragment extends DialogFragment implements View.OnCli
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        dismiss();
+                        toastMessage(error.getMessage());
+                    }
+                });
 
-                }
-            });
-
-            requestQueue.add(jsonObjectRequest);
-
+            AppConfig.getWebServiceProvider().addToRequestQueue(registerRequest);
         }
     }
 

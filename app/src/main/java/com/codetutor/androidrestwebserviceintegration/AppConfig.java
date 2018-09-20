@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 
 import com.codetutor.androidrestwebserviceintegration.network.Util;
+import com.codetutor.androidrestwebserviceintegration.network.WebServiceProvider;
 
 /**
  * Created by anildeshpande on 5/2/18.
@@ -17,6 +18,8 @@ public class AppConfig extends Application {
     public static API_ENDPOINTS selectedEndPoint;
     public boolean isEmulator;
 
+    private static WebServiceProvider webServiceProvider;
+
     public static enum API_ENDPOINTS{
         localhost, remote
     }
@@ -29,7 +32,7 @@ public class AppConfig extends Application {
         sharedPreferences = getSharedPreferences("appprefrences.xml",MODE_PRIVATE);
         editor = sharedPreferences.edit();
         isEmulator = Util.isEmulator();
-
+        webServiceProvider = WebServiceProvider.getInstance(this);
     }
 
     public static void saveUserName(String username){
@@ -68,5 +71,10 @@ public class AppConfig extends Application {
     public static boolean getSeverEndPointPreference(){
         return sharedPreferences.getBoolean("endpoint", true);
     }
+
+    public static WebServiceProvider getWebServiceProvider(){
+        return webServiceProvider;
+    }
+
 
 }
