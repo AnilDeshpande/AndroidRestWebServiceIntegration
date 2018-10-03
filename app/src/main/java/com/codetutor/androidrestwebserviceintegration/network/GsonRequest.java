@@ -1,6 +1,9 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
+import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -18,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GsonRequest<T> extends JsonRequest<T> {
+
+    private static final String TAG = GsonRequest.class.getSimpleName();
 
     public enum REQ_TYPE{
         REGISTER,
@@ -80,7 +85,6 @@ public class GsonRequest<T> extends JsonRequest<T> {
         }
 
         GsonRequest<T> gsonRequest = new GsonRequest(httpRequestType, url,requestBody, clazz, headers, listener, errorListener);
-
         return gsonRequest;
     }
 
@@ -90,10 +94,43 @@ public class GsonRequest<T> extends JsonRequest<T> {
     }
 
     @Override
+    public void addMarker(String tag) {
+        super.addMarker(tag);
+        if (tag.equals("cache-hit")){
+            Log.i(TAG,"Cach-hit");
+        }else{
+            Log.i(TAG,"Cach-miss");
+        }
+    }
+
+    @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
+        Cache.Entry cacheEntry = HttpHeaderParser.parseCacheHeaders(response);
+        if (cacheEntry == null) {
+            cacheEntry = new Cache.Entry();
+        }
+        final long cacheHitButRefreshed = 3 * 60 * 1000; // in 3 minutes cache will be hit, but also refreshed on background
+        final long cacheExpired = 24 * 60 * 60 * 1000; // in 24 hours this cache entry expires completely
+        long now = System.currentTimeMillis();
+        final long softExpire = now + cacheHitButRefreshed;
+        final long ttl = now + cacheExpired;
+        cacheEntry.data = response.data;
+        cacheEntry.softTtl = softExpire;
+        cacheEntry.ttl = ttl;
+        String headerValue;
+        headerValue = response.headers.get("Date");
+        if (headerValue != null) {
+            cacheEntry.serverDate = HttpHeaderParser.parseDateAsEpoch(headerValue);
+        }
+        headerValue = response.headers.get("Last-Modified");
+        if (headerValue != null) {
+            cacheEntry.lastModified = HttpHeaderParser.parseDateAsEpoch(headerValue);
+        }
+        cacheEntry.responseHeaders = response.headers;
+
         try {
-            String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            return Response.success(gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
+            String json = new String(cacheEntry.data, HttpHeaderParser.parseCharset(response.headers));
+            return Response.success(gson.fromJson(json, clazz), cacheEntry);
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JsonSyntaxException e) {

@@ -1,6 +1,7 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -12,6 +13,7 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 
 public class WebServiceProvider {
+    private static final String TAG = WebServiceProvider.class.getSimpleName();
 
     private RequestQueue requestQueue;
 
@@ -19,8 +21,7 @@ public class WebServiceProvider {
 
     private WebServiceProvider(Context context){
         requestQueue = Volley.newRequestQueue(context);
-
-        /*Cache cache = new DiskBasedCache(context.getCacheDir(),1024*1024);
+        /*cache = new DiskBasedCache(context.getCacheDir(),1024*1024);
         Network network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache,network);*/
         requestQueue.start();
