@@ -70,9 +70,10 @@ public class GsonRequest<T> extends JsonRequest<T> {
 
         switch (requestType){
             case GET_TODOS: httpRequestType = Method.GET;
-                            if(previousRequest!=null && previousRequest.equals(REQ_TYPE.GET_TODOS)){
+                            if(previousRequest!=null && previousRequest.equals(requestType)){
                                 shouldCache=true;
                             }else{
+                                AppConfig.getWebServiceProvider().clearCache();
                                 shouldCache=false;
                             }
                             url = RestAPIs.getBaseUrl()+ ToDoAppRestAPI.getToDoItem+"/"+ AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId();

@@ -34,4 +34,10 @@ public class WebServiceProvider {
     public <T> void addToRequestQueue(Request<T> request){
         requestQueue.add(request);
     }
+
+    public void clearCache(){
+        if(requestQueue!=null){
+            requestQueue.getCache().clear();
+        }
+    }
 }
