@@ -1,9 +1,10 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
@@ -19,6 +20,8 @@ import java.util.Map;
 
 public class GsonRequest<T> extends JsonRequest<T> {
 
+    private static  final String TAG = GsonRequest.class.getSimpleName();
+
     public enum REQ_TYPE{
         REGISTER,
         LOGIN,
@@ -28,6 +31,8 @@ public class GsonRequest<T> extends JsonRequest<T> {
         DELETE_TODO,
         LOGOUT
     }
+
+    private REQ_TYPE currentRequestType;
 
     private final Gson gson = new Gson();
     private final Class<T> clazz;
@@ -39,6 +44,10 @@ public class GsonRequest<T> extends JsonRequest<T> {
         this.clazz = clazz;
         this.headers = headers;
         this.listener = listener;
+    }
+
+    public void setCurrentRequestType(REQ_TYPE currentRequestType) {
+        this.currentRequestType = currentRequestType;
     }
 
     @Override
@@ -80,7 +89,7 @@ public class GsonRequest<T> extends JsonRequest<T> {
         }
 
         GsonRequest<T> gsonRequest = new GsonRequest(httpRequestType, url,requestBody, clazz, headers, listener, errorListener);
-
+        gsonRequest.setCurrentRequestType(requestType);
         return gsonRequest;
     }
 
@@ -104,5 +113,10 @@ public class GsonRequest<T> extends JsonRequest<T> {
     @Override
     protected VolleyError parseNetworkError(VolleyError volleyError) {
         return super.parseNetworkError(volleyError);
+    }
+
+    @Override
+    public void addMarker(String tag) {
+        Log.i(TAG,currentRequestType+": "+tag);
     }
 }
