@@ -40,7 +40,7 @@ public class GsonRequest<T> extends JsonRequest<T> {
     private final Listener<T> listener;
 
 
-    private static REQ_TYPE previousRequest = null;
+
     private REQ_TYPE currentRequest;
 
     public void setCurrentRequest(REQ_TYPE currentRequest){
@@ -63,19 +63,12 @@ public class GsonRequest<T> extends JsonRequest<T> {
 
         int httpRequestType=0;
         String url=null;
-        boolean shouldCache=false;
 
         Map<String, String> headers =new HashMap<String, String>();
         headers.put("Content-Type","application/json");
 
         switch (requestType){
             case GET_TODOS: httpRequestType = Method.GET;
-                            if(previousRequest!=null && previousRequest.equals(requestType)){
-                                shouldCache=true;
-                            }else{
-                                AppConfig.getWebServiceProvider().clearCache();
-                                shouldCache=false;
-                            }
                             url = RestAPIs.getBaseUrl()+ ToDoAppRestAPI.getToDoItem+"/"+ AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId();
                             headers.put("token",AppConfig.getSessionTokenValue());
                             break;
@@ -84,32 +77,25 @@ public class GsonRequest<T> extends JsonRequest<T> {
                                headers.put("token",AppConfig.getSessionTokenValue());
                                break;
             case DELETE_TODO: httpRequestType = Method.DELETE;
-                              shouldCache=false;
                               url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.deleteToDo+"/"+AppConfig.getToBeDeletedToDoId();
                               headers.put("token",AppConfig.getSessionTokenValue());
                               break;
             case REGISTER: httpRequestType = Method.POST;
-                            shouldCache=false;
                             url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
                             break;
             case LOGIN: httpRequestType = Method.POST;
-                        shouldCache=false;
                         url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login; break;
             case ADD_TODO: httpRequestType = Method.POST;
-                           shouldCache=false;
                            url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.addToDoItem;
                            headers.put("token",AppConfig.getSessionTokenValue());
                            break;
             case LOGOUT: httpRequestType = Method.POST;
-                         shouldCache=false;
                          url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.logout;
                          break;
         }
 
         GsonRequest<T> gsonRequest = new GsonRequest(httpRequestType, url,requestBody, clazz, headers, listener, errorListener);
         gsonRequest.setCurrentRequest(requestType);
-        gsonRequest.setShouldCache(shouldCache);
-        previousRequest=requestType;
         return gsonRequest;
     }
 
