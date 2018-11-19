@@ -132,9 +132,11 @@ public class GsonRequest<T> extends JsonRequest<T> {
         }
         final long cacheHitButRefreshed = 3 * 60 * 1000; // in 3 minutes cache will be hit, but also refreshed on background
         final long cacheExpired = 24 * 60 * 60 * 1000; // in 24 hours this cache entry expires completely
-        long now = System.currentTimeMillis();
-        final long softExpire = now + cacheHitButRefreshed;
-        final long ttl = now + cacheExpired;
+
+        long now = System.currentTimeMillis(); // Current Time
+        final long softExpire = now + cacheHitButRefreshed; // sum of current time and cache refresh rate
+        final long ttl = now + cacheExpired; // sum of current time and chacheExpiry time
+
         cacheEntry.data = response.data;
         cacheEntry.softTtl = softExpire;
         cacheEntry.ttl = ttl;
