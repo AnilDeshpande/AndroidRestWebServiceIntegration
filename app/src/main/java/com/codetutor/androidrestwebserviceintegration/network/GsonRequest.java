@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class GsonRequest<T> extends JsonRequest<T> {
 
-    private static final String TAG = GsonRequest.class.getSimpleName();
+    private static final String TAG = "VolleyDemo";
 
     public enum REQ_TYPE{
         REGISTER,
@@ -69,6 +69,7 @@ public class GsonRequest<T> extends JsonRequest<T> {
         headers.put("Content-Type","application/json");
 
         switch (requestType){
+
             case GET_TODOS: httpRequestType = Method.GET;
                             if(previousRequest!=null && previousRequest.equals(requestType)){
                                 shouldCache=true;
@@ -76,30 +77,38 @@ public class GsonRequest<T> extends JsonRequest<T> {
                                 AppConfig.getWebServiceProvider().clearCache();
                                 shouldCache=false;
                             }
+
                             url = RestAPIs.getBaseUrl()+ ToDoAppRestAPI.getToDoItem+"/"+ AppConfig.getSavedSuccessfulAuthor().getAuthorEmailId();
                             headers.put("token",AppConfig.getSessionTokenValue());
                             break;
+
             case MODIFY_TODOS: httpRequestType = Method.PUT;
+                               shouldCache=false;
                                url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.modifyToDoUrl;
                                headers.put("token",AppConfig.getSessionTokenValue());
                                break;
+
             case DELETE_TODO: httpRequestType = Method.DELETE;
                               shouldCache=false;
                               url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.deleteToDo+"/"+AppConfig.getToBeDeletedToDoId();
                               headers.put("token",AppConfig.getSessionTokenValue());
                               break;
+
             case REGISTER: httpRequestType = Method.POST;
-                            shouldCache=false;
-                            url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
-                            break;
+                           shouldCache=false;
+                           url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.registerAuthor;
+                           break;
+
             case LOGIN: httpRequestType = Method.POST;
                         shouldCache=false;
                         url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.login; break;
+
             case ADD_TODO: httpRequestType = Method.POST;
                            shouldCache=false;
                            url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.addToDoItem;
                            headers.put("token",AppConfig.getSessionTokenValue());
                            break;
+
             case LOGOUT: httpRequestType = Method.POST;
                          shouldCache=false;
                          url = RestAPIs.getBaseUrl()+ToDoAppRestAPI.logout;

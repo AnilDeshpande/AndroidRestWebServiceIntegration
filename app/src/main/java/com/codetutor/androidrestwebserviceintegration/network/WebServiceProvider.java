@@ -38,6 +38,7 @@ public class WebServiceProvider {
     public void clearCache(){
         if(requestQueue!=null){
             requestQueue.getCache().clear();
+            Log.i("VolleyDemo","Clearing the cache");
         }
     }
 }
