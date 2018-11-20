@@ -41,7 +41,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener{
     private TextView textViewToDos;
     private Button buttonAddToDo, buttonRemoveToDo, buttonModifyToDo;
 
-    List<ToDoItem> toDoItems;
+    List<ToDoItem> toDoItems = new ArrayList<ToDoItem>();
 
     ToDoItem itemToBeRemoved;
 
