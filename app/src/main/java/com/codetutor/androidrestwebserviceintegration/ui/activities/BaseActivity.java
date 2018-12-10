@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.CustomProgressDialog;
-import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
 
 public class BaseActivity extends AppCompatActivity{
 

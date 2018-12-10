@@ -7,33 +7,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
-import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
-import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
-import com.codetutor.androidrestwebserviceintegration.restbean.Error;
-import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.restbean.ModifyToDoPayloadBean;
-import com.codetutor.androidrestwebserviceintegration.restbean.Success;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoItem;
 import com.codetutor.androidrestwebserviceintegration.restbean.ToDoListResponse;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HomeActivity extends BaseActivity implements View.OnClickListener{
 

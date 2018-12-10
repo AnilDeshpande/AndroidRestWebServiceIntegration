@@ -1,7 +1,5 @@
 package com.codetutor.androidrestwebserviceintegration.network;
 
-import com.codetutor.androidrestwebserviceintegration.AppConfig;
-
 /**
  * Created by anildeshpande on 2/21/18.
  */

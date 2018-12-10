@@ -2,10 +2,7 @@ package com.codetutor.androidrestwebserviceintegration.ui.activities;
 
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -14,24 +11,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.codetutor.androidrestwebserviceintegration.AppConfig;
 import com.codetutor.androidrestwebserviceintegration.R;
 import com.codetutor.androidrestwebserviceintegration.network.GsonRequest;
-import com.codetutor.androidrestwebserviceintegration.network.RestAPIs;
-import com.codetutor.androidrestwebserviceintegration.network.ToDoAppRestAPI;
 import com.codetutor.androidrestwebserviceintegration.network.Util;
 import com.codetutor.androidrestwebserviceintegration.restbean.Author;
 import com.codetutor.androidrestwebserviceintegration.restbean.LoginToken;
 import com.codetutor.androidrestwebserviceintegration.ui.dialogs.RegisterDialogFragment;
 import com.google.gson.GsonBuilder;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, RegisterDialogFragment.RegistrationListener{
 
